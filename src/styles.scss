@@ -1,0 +1,25 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+*{
+    box-sizing: border-box;
+    font-family: url('../public/assets/fonts/Inter/Inter-VariableFont_opsz\,wght.ttf');
+}
+
+    .btn-auth {
+      background-color: #2563eb;
+      color: #fff;
+      font-weight: 500;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      border-radius: 5px;
+    }
+
+    .btn-auth:hover {
+      background-color: #1d4ed8;
+      color: white;
+    }
