@@ -1,24 +1,91 @@
 <div class="d-flex align-items-center justify-content-center h-100 w-100">
-    <div class="loginSection w-75" >
-  <h3 class="fw-bolder pb-5">Login</h3>
-  <form>
-    <div class="form-group pb-3">
-      <label for="exampleInputEmail1" class="pb-1">Email</label>
-      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email" />
-    </div>
+    <div class="loginSection w-75">
+        <h3 class="fw-bolder pb-5">Login</h3>
 
-    <div class="form-group pb-3">
-      <label for="exampleInputPassword1" class="pb-1">Password</label>
-      <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" />
-    </div>
+        <form [formGroup]='LogginForm' (ngSubmit)="onSubmit()">
+            <div class="form-group pb-3">
+                <label for="exampleInputEmail1" class="pb-1">Email</label>
 
-    <a routerLink="/forgetpassword" class="text-primary text-decoration-none fw-lighter d-block text-end pb-3">Forgot your password?</a>
-    <button type="submit" class="btn btn-auth w-100 mb-4">Login</button>
+                <input 
+                    type="email"
+                    id="exampleInputEmail1"
+                    class="form-control"
+                    formControlName="email"
+                    placeholder="Enter email"
+                    [ngClass]="{'is-invalid': LogginForm.get('email')?.touched && LogginForm.get('email')?.invalid}" 
+                />
 
-    <p class="text-center">
-      Don’t have an account?
-      <a routerLink="/signup" class="text-primary text-decoration-none fw-lighter">Create yours</a>
-    </p>
-  </form>
-</div> 
+                @if(LogginForm.get('email')?.touched && LogginForm.get('email')?.invalid) {
+                    <div class="invalid-feedback d-block">
+                        @if(LogginForm.get('email')?.errors?.['required']) {
+                            <p>Email is required.</p>
+                        }
+                        @if(LogginForm.get('email')?.errors?.['email'] || LogginForm.get('email')?.errors?.['pattern']) {
+                            <p>Invalid email format.</p>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="form-group pb-3">
+                <label for="exampleInputPassword1" class="pb-1">Password</label>
+
+                <input 
+                    type="password"
+                    class="form-control"
+                    id="exampleInputPassword1"
+                    formControlName="password"
+                    placeholder="Password"
+                    [ngClass]="{'is-invalid': LogginForm.get('password')?.touched && LogginForm.get('password')?.invalid}" 
+                />
+
+                @if(LogginForm.get('password')?.touched && LogginForm.get('password')?.invalid) {
+                    <div class="invalid-feedback d-block">
+                        @if(LogginForm.get('password')?.errors?.['required']) {
+                            <p>Password is required.</p>
+                        }
+                        @if(LogginForm.get('password')?.errors?.['minlength']) {
+                            <p>Password must be at least 8 characters.</p>
+                        }
+                        @if(LogginForm.get('password')?.errors?.['pattern']) {
+                            <p>Password must contain uppercase, lowercase, number, and special character.</p>
+                        }
+                    </div>
+                }
+            </div>
+
+            <a routerLink="/forgetpassword" class="text-primary text-decoration-none fw-lighter d-block text-end pb-3">
+                Forgot your password?
+            </a>
+
+                    @if (apiError) {
+                      <div class="alert alert-danger rounded-0 text-center fw-medium position-relative" role="alert">
+                          <div class="error-icon position-absolute top-0 start-50 translate-middle">
+                              <i class="fa-regular fa-circle-xmark"></i>
+                          </div>
+                          
+                          <div class="alert-content pt-3">
+                              {{ apiError }}
+                          </div>
+                      </div>
+                  }
+                              
+            <button 
+                type="submit" 
+                class="btn btn-auth w-100 mb-4"
+                [disabled]="isLoading">
+                @if (isLoading) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Logging in...
+                } @else {
+                    Login
+                }
+            </button>
+
+            <p class="text-center">
+                Don't have an account?
+                <a routerLink="/signup" class="text-primary text-decoration-none fw-lighter">Create yours</a>
+            </p>
+        </form>
+    </div> 
 </div>
