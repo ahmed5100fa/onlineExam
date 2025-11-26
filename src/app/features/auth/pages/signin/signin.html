@@ -6,13 +6,13 @@
             <div class="form-group pb-3">
                 <label for="exampleInputEmail1" class="pb-1">Email</label>
 
-                <input 
+                <input
                     type="email"
                     id="exampleInputEmail1"
                     class="form-control"
                     formControlName="email"
                     placeholder="Enter email"
-                    [ngClass]="{'is-invalid': LogginForm.get('email')?.touched && LogginForm.get('email')?.invalid}" 
+                    [class]="{'is-invalid': LogginForm.get('email')?.touched && LogginForm.get('email')?.invalid}"
                 />
 
                 @if(LogginForm.get('email')?.touched && LogginForm.get('email')?.invalid) {
@@ -30,13 +30,13 @@
             <div class="form-group pb-3">
                 <label for="exampleInputPassword1" class="pb-1">Password</label>
 
-                <input 
+                <input
                     type="password"
                     class="form-control"
                     id="exampleInputPassword1"
                     formControlName="password"
                     placeholder="Password"
-                    [ngClass]="{'is-invalid': LogginForm.get('password')?.touched && LogginForm.get('password')?.invalid}" 
+                    [class]="{'is-invalid': LogginForm.get('password')?.touched && LogginForm.get('password')?.invalid}"
                 />
 
                 @if(LogginForm.get('password')?.touched && LogginForm.get('password')?.invalid) {
@@ -58,34 +58,18 @@
                 Forgot your password?
             </a>
 
-                    @if (apiError) {
-                      <div class="alert alert-danger rounded-0 text-center fw-medium position-relative" role="alert">
-                          <div class="error-icon position-absolute top-0 start-50 translate-middle">
-                              <i class="fa-regular fa-circle-xmark"></i>
-                          </div>
-                          
-                          <div class="alert-content pt-3">
-                              {{ apiError }}
-                          </div>
-                      </div>
-                  }
-                              
-            <button 
-                type="submit" 
-                class="btn btn-auth w-100 mb-4"
-                [disabled]="isLoading">
-                @if (isLoading) {
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Logging in...
-                } @else {
-                    Login
-                }
-            </button>
+            <app-alert [message]="apiError" type="danger"></app-alert>
+
+            <app-auth-btn
+              text="Login"
+              [loading]="isLoading()"
+              type="primary">
+            </app-auth-btn>
 
             <p class="text-center">
                 Don't have an account?
                 <a routerLink="/signup" class="text-primary text-decoration-none fw-lighter">Create yours</a>
             </p>
         </form>
-    </div> 
+    </div>
 </div>

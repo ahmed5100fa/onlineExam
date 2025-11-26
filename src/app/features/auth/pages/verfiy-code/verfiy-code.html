@@ -1,32 +1,55 @@
+@if (!showChangePassword()) {
 <div class="d-flex align-items-center justify-content-center h-100 w-100">
-    <div class="otp-box text-center w-75">
+  <div class="otp-box text-center w-75">
     <div class="text-start mb-4">
-      <a routerLink="/forgetpassword" class="back-arrow text-decoration-none">&larr;</a>
+      <a (click)="goBack()" class="back-arrow text-decoration-none" style="cursor: pointer;">&larr;</a>
     </div>
 
     <h3 class="fw-bold mb-3">Verify OTP</h3>
     <p class="text-secondary mb-4">
       Please enter the 6-digits code we have sent to: <br />
-      <strong>user@example.com</strong>. 
-      <a routerLink="/forgetpassword" class="edit-link text-primary text-decoration-none">Edit</a>
+      <strong>{{ email }}</strong>.
+      <a (click)="goBack()" class="edit-link text-primary text-decoration-none" style="cursor: pointer;">Edit</a>
     </p>
+    <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()">
+      <div class="otp-inputs mb-3 d-flex justify-content-center gap-2">
+        <div class="otp-inputs mb-3 d-flex justify-content-center gap-2">
+           <input type="text" maxlength="1" class="form-control text-center" formControlName="digit1" id="digit1" (keypress)="validateNumber($event)" [class.is-invalid]="verifyForm.get('digit1')?.invalid && verifyForm.get('digit1')?.touched">
+           <input type="text" maxlength="1" class="form-control text-center" formControlName="digit2" id="digit2" (keypress)="validateNumber($event)" [class.is-invalid]="verifyForm.get('digit2')?.invalid && verifyForm.get('digit2')?.touched">
+           <input type="text" maxlength="1" class="form-control text-center" formControlName="digit3" id="digit3" (keypress)="validateNumber($event)" [class.is-invalid]="verifyForm.get('digit3')?.invalid && verifyForm.get('digit3')?.touched">
+           <input type="text" maxlength="1" class="form-control text-center" formControlName="digit4" id="digit4" (keypress)="validateNumber($event)" [class.is-invalid]="verifyForm.get('digit4')?.invalid && verifyForm.get('digit4')?.touched">
+           <input type="text" maxlength="1" class="form-control text-center" formControlName="digit5" id="digit5" (keypress)="validateNumber($event)" [class.is-invalid]="verifyForm.get('digit5')?.invalid && verifyForm.get('digit5')?.touched">
+          <input type="text" maxlength="1" class="form-control text-center" formControlName="digit6" id="digit6" (keypress)="validateNumber($event)" [class.is-invalid]="verifyForm.get('digit6')?.invalid && verifyForm.get('digit6')?.touched">
+         </div>
+      </div>
 
-    <div class="otp-inputs mb-3 d-flex justify-content-center">
-      <input type="text" maxlength="1" class="form-control" />
-      <input type="text" maxlength="1" class="form-control" />
-      <input type="text" maxlength="1" class="form-control" />
-      <input type="text" maxlength="1" class="form-control" />
-      <input type="text" maxlength="1" class="form-control" />
-      <input type="text" maxlength="1" class="form-control" />
-    </div>
+      <p class="text-muted mb-4">
+        You can request another code in:
+        <strong>{{ timer() }}s</strong>
+        <span *ngIf="canResend">
+          • <a (click)="resendCode()" class="text-primary text-decoration-none" style="cursor: pointer;">
+            Resend Code
+          </a>
+        </span>
+      </p>
 
-    <p class="text-muted mb-4">You can request another code in: <strong>60s</strong></p>
+      <app-alert [message]="apiError" type="danger"></app-alert>
 
-    <button class="btn btn-auth mb-4" routerLink="/changepassword">Verify Code</button>
+      <app-auth-btn
+              text="Verify Code"
+              [loading]="isLoading()"
+              type="primary">
+            </app-auth-btn>
+    </form>
 
     <p class="text-muted">
-      Don’t have an account? 
+      Don't have an account?
       <a routerLink="/signup" class="edit-link text-primary text-decoration-none">Create yours</a>
     </p>
   </div>
 </div>
+}
+
+@if (showChangePassword()) {
+  <app-change-password></app-change-password>
+}

@@ -1,0 +1,12 @@
+<button
+  class="btn w-100 mb-4"
+  [class]="'btn-' + type"
+  [disabled]="loading">
+
+  @if (loading) {
+    <span class="spinner-border spinner-border-sm me-2"></span>
+    Loading...
+  } @else {
+    <span [innerHTML]="htmlText || text"></span>
+  }
+</button>

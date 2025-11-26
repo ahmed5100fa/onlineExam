@@ -1,0 +1,11 @@
+@if (message) {
+      <div class="alert alert-{{type}} rounded-0 text-center fw-medium position-relative" role="alert">
+        <div class="error-icon position-absolute top-0 start-50 translate-middle">
+          <i class="fa-regular {{getIconClass()}}"></i>
+        </div>
+
+        <div class="alert-content pt-3">
+          {{ message }}
+        </div>
+      </div>
+    }

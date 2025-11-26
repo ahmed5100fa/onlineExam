@@ -1,29 +1,80 @@
 <div class="d-flex align-items-center justify-content-center min-vh-100">
   <div class="signupSection w-75">
     <h3 class="fw-bolder pb-4">Create Account</h3>
-    <form >
+    <form [formGroup]="RegisterForm" (ngSubmit)="SubmitRegister()">
 
       <div class="row">
+        <!-- first name -->
         <div class="col-md-6 mb-3">
           <label class="form-label">First name</label>
           <input type="text" class="form-control" formControlName="firstName" placeholder="Ahmed" />
+
+          @if(RegisterForm.get("firstName")?.touched && RegisterForm.get("firstName")?.invalid){
+            <div class="invalid-feedback d-block">
+              @if(RegisterForm.get("firstName")?.errors?.['required']){
+                <p>First Name is required</p>
+              }
+
+              @if(RegisterForm.get("firstName")?.errors?.["minlength"]){
+                <p>First Name must be at least 2 characters.</p>
+              }
+            </div>
+          }
         </div>
+
+        <!-- last name -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Last name</label>
           <input type="text" class="form-control" formControlName="lastName" placeholder="Abdullah" />
+          @if (RegisterForm.get('lastName')?.touched && RegisterForm.get('lastName')?.invalid) {
+            <div class="invalid-feedback d-block">
+              @if (RegisterForm.get('lastName')?.errors?.['required']) {
+                <p>Last Name is required</p>
+              }
+              @if (RegisterForm.get('lastName')?.errors?.['minlength']) {
+                <p>Last Name must be at least 2 characters.</p>
+              }
+            </div>
+          }
         </div>
       </div>
 
+      <!-- username -->
       <div class="mb-3">
         <label class="form-label">Username</label>
         <input type="text" class="form-control" formControlName="username" placeholder="user1234" />
+        @if (RegisterForm.get('username')?.touched && RegisterForm.get('username')?.invalid) {
+          <div class="invalid-feedback d-block">
+            @if(RegisterForm.get('username')?.errors?.['required']){
+              <p>UserName is required</p>
+            }
+            @if (RegisterForm.get('username')?.errors?.['minlength']) {
+              <p>UserName must be at least 3 characters.</p>
+            }
+            @if (RegisterForm.get('username')?.errors?.['pattern']) {
+              <p>Username can only contain letters, numbers, and underscores</p>
+            }
+          </div>
+        }
       </div>
 
+      <!-- email -->
       <div class="mb-3">
         <label class="form-label">Email</label>
         <input type="email" class="form-control" formControlName="email" placeholder="user@example.com" />
+        @if(RegisterForm.get('email')?.touched && RegisterForm.get('email')?.invalid) {
+            <div class="invalid-feedback d-block">
+                 @if(RegisterForm.get('email')?.errors?.['required']) {
+                      <p>Email is required.</p>
+                  }
+                  @if(RegisterForm.get('email')?.errors?.['email'] || RegisterForm.get('email')?.errors?.['pattern']) {
+                      <p>Invalid email format.</p>
+                  }
+            </div>
+        }
       </div>
 
+      <!-- phone -->
       <div class="mb-3">
         <label class="form-label">Phone</label>
         <div class="input-group">
@@ -33,24 +84,71 @@
               <span>+20</span>
             </span>
           </div>
-          <input type="text" class="form-control" placeholder="1012345678" />
+          <input type="text" class="form-control" placeholder="1012345678" formControlName="phone" />
         </div>
+        @if(RegisterForm.get("phone")?.touched && RegisterForm.get('phone')?.invalid){
+          <div class="invalid-feedback d-block">
+            @if(RegisterForm.get("phone")?.errors?.['required']){
+              <p>Phone number is required</p>
+            }
+            @if(RegisterForm.get('phone')?.errors?.['pattern']){
+              <p>Please enter a valid phone number</p>
+            }
+          </div>
+        }
       </div>
-      
+
+      <!-- passwrd -->
       <div class="mb-3">
         <label class="form-label">Password</label>
         <input type="password" class="form-control" formControlName="password" placeholder="Password" />
+        @if(RegisterForm.get('password')?.touched && RegisterForm.get('password')?.invalid) {
+          <div class="invalid-feedback d-block">
+            @if(RegisterForm.get('password')?.errors?.['required']) {
+              <p>Password is required.</p>
+            }
+            @if(RegisterForm.get('password')?.errors?.['minlength']) {
+              <p>Password must be at least 8 characters.</p>
+            }
+            @if(RegisterForm.get('password')?.errors?.['pattern']) {
+              <p>Password must contain uppercase, lowercase, number, and special character.</p>
+            }
+          </div>
+        }
       </div>
 
+      <!-- confirm Password -->
       <div class="mb-4">
         <label class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirm Password" />
+        <input type="password" class="form-control" formControlName="rePassword" placeholder="Confirm Password" />
+          @if(RegisterForm.get('rePassword')?.touched && RegisterForm.get('rePassword')?.invalid) {
+            <div class="invalid-feedback d-block">
+              @if(RegisterForm.get('rePassword')?.errors?.['required']) {
+                <p>Confirm Password is required.</p>
+              }
+            </div>
+          }
+
+          <!-- mismatch error from the form group -->
+          @if(RegisterForm.errors?.['mismatch'] && RegisterForm.get('rePassword')?.touched) {
+            <div class="invalid-feedback d-block">
+              <p>Passwords do not match.</p>
+            </div>
+          }
       </div>
 
-      <button type="submit" class="btn btn-auth w-100 mb-3">Create Account</button>
+      <app-alert [message]="apiError" type="danger"></app-alert>
+
+      <app-auth-btn
+              text="Create Account"
+              [loading]="isLoading()"
+              type="primary">
+      </app-auth-btn>
+
+
 
       <p class="text-center">
-        Already have an account? 
+        Already have an account?
         <a routerLink="/login" class="text-primary text-decoration-none fw-lighter">Login</a>
       </p>
     </form>
