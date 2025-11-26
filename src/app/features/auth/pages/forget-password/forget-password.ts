@@ -1,12 +1,73 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink, RouterModule } from '@angular/router';
+import { AuthService, ForgotPasswordData } from 'auth';
+import { NgClass } from '@angular/common';
+import { VerfiyCode } from "../verfiy-code/verfiy-code";
+import { AlertComponent } from "../../../../shared/components/alert/alert";
+import { AuthBtn } from "../../../../shared/components/auth-btn/auth-btn";
 
 @Component({
   selector: 'app-forget-password',
-  imports: [RouterLink],
+  standalone: true,
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    RouterModule,
+    VerfiyCode,
+    AlertComponent,
+    AuthBtn
+],
   templateUrl: './forget-password.html',
   styleUrl: './forget-password.scss',
 })
-export class ForgetPassword {
+export class ForgetPasswordComponent {
+  private _AuthService = inject(AuthService);
+  private _Router = inject(Router);
+
+  isLoading = signal(false);
+  showVerifyCode = signal(false);
+  apiError: string = '';
+
+  ForgetForm: FormGroup = new FormGroup({
+    email: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    ])
+  })
+
+  ForgetPassword(data: ForgotPasswordData) {
+    this.apiError = '';
+    this.isLoading.set(true);
+    this._AuthService.forgetPassword(data).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        this.showVerifyCode.set(true);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        if (err.error?.message) {
+          this.apiError = err.error.message;
+        } else if (err.status === 0) {
+          this.apiError = 'Network error. Please check your connection.';
+        } else {
+          this.apiError = 'Something went wrong. Please try again.';
+        }
+      }
+    })
+  }
+
+  onSubmit() {
+    this.apiError = '';
+    if (this.ForgetForm.valid) {
+      this.ForgetPassword(this.ForgetForm.value)
+    } else {
+      this.ForgetForm.markAllAsTouched();
+    }
+  }
+
+    handleBackToForgetPassword() {
+    this.showVerifyCode.set(false);
+  }
 
 }

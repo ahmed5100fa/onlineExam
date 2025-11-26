@@ -10,7 +10,7 @@ import { LoginCredentials, AuthResponse, RegisterCredentials, ChangePasswordResp
 })
 export class AuthService implements AuthApi{
   _HttpClient = inject(HttpClient)
-  
+
   //login
    Login(data: LoginCredentials): Observable<AuthResponse> {
       return this._HttpClient.post<AuthResponse>(AuthEndPoint.LOGIN , data)
@@ -23,16 +23,12 @@ export class AuthService implements AuthApi{
 
   //changePassword
   changePassword(data : ChangePasswordData , token : string):Observable<ChangePasswordResponse>{
-    return this._HttpClient.patch<ChangePasswordResponse>(AuthEndPoint.CHANGEPASS , data , {
-      headers :{
-        token : token
-      }
-    })
+    return this._HttpClient.patch<ChangePasswordResponse>(AuthEndPoint.CHANGEPASS , data )
   }
 
   //forgetPassword
   forgetPassword(data : ForgotPasswordData):Observable<ForgotPasswordResponse>{
-    return this._HttpClient.post<ForgotPasswordResponse>(AuthEndPoint.FORGETPASS , data) 
+    return this._HttpClient.post<ForgotPasswordResponse>(AuthEndPoint.FORGETPASS , data)
   }
 
   //verifyCode
@@ -47,37 +43,21 @@ export class AuthService implements AuthApi{
 
   //logout
   logout(token : string):Observable<LogoutResponse>{
-    return this._HttpClient.get<LogoutResponse>(AuthEndPoint.LOGOUT , {
-      headers : {
-        token : token
-      }
-    })
+    return this._HttpClient.get<LogoutResponse>(AuthEndPoint.LOGOUT )
   }
 
   //get logged user info
   getLoggedUserInfo(token : string):Observable<AuthResponse>{
-     return this._HttpClient.get<AuthResponse>(AuthEndPoint.GETLOGGEDUSER , {
-      headers : {
-        token : token
-      }
-    })
+     return this._HttpClient.get<AuthResponse>(AuthEndPoint.GETLOGGEDUSER)
   }
 
   // updateProfile
   updateProfile(data : UpdateProfileData  , token : string):Observable<UpdateProfileResponse>{
-    return this._HttpClient.put<UpdateProfileResponse>( AuthEndPoint.EDITPROFILE ,data , {
-      headers : {
-        token : token
-      }
-    })
+    return this._HttpClient.put<UpdateProfileResponse>( AuthEndPoint.EDITPROFILE ,data )
   }
 
   //deleteAccount
   deleteAccount(token : string):Observable<DeleteAccountResponse>{
-    return this._HttpClient.delete<DeleteAccountResponse>(AuthEndPoint.DELETEME , {
-      headers:{
-        token : token
-      }
-    })
+    return this._HttpClient.delete<DeleteAccountResponse>(AuthEndPoint.DELETEME )
   }
 }
