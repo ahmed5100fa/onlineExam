@@ -4,14 +4,15 @@ html, body {
   padding: 0;
 }
 
-* {
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-}
 
 @font-face {
   font-family: 'Inter';
   src: url('../public/assets/fonts/Inter/Inter-VariableFont_opsz\,wght.ttf') format('truetype');
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif !important;
 }
 
 

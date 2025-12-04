@@ -1,0 +1,42 @@
+<header class="py-3">
+  <div class="container-fluid align-items-center d-flex">
+    <button class="btn btn-outline-secondary d-md-none me-2" type="button"
+            data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
+            aria-controls="offcanvasSidebar">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item" *ngIf="!isDiplomasPage()">
+          <a routerLink="/home/diplomas">Home</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          {{ breadcrumbText }}
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container-fluid">
+    <div class="d-flex align-items-center align-items-center w-100">
+      <!-- Back Button Section -->
+      <div class="backSec p-1 h-100" *ngIf="canGoBack()">
+        <button
+          class="btn btn-outline-primary rounded-0 d-flex align-items-center justify-content-center"
+          style="height: 60px; cursor: pointer;"
+          (click)="goBack()">
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
+      </div>
+
+      <!-- Page Title Section -->
+      <div class="rightSec flex-grow-1">
+        <div class="bg-primary text-white fw-bold h4 pb-0 mb-0 d-flex align-items-center ps-3"
+             style="height: 60px;">
+          <span [innerHTML]="currentPage"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

@@ -10,6 +10,7 @@ import { setHeaderInterceptor } from './core/interceptors/set-header-interceptor
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideAnimations(),
     provideZonelessChangeDetection(),
     provideHttpClient(withFetch(), withInterceptors([setHeaderInterceptor])),
     provideRouter(routes),

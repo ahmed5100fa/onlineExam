@@ -1,0 +1,43 @@
+  <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-3 side">
+    <ul class="nav nav-pills flex-column mb-auto w-100" id="menu">
+
+      <!-- Profile -->
+      <li class="nav-item mb-2 w-100">
+        <a
+          routerLink="/home/setting/profile"
+          routerLinkActive="Active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-link d-flex align-items-center text-dark p-2 hover-border"
+        >
+          <i class="fa-regular fa-user me-2"></i>
+          <span class="d-none d-sm-inline">Profile</span>
+        </a>
+      </li>
+
+      <!-- Change Password -->
+      <li class="nav-item mb-2 w-100">
+        <a
+          routerLink="/home/setting/ChangePass"
+          routerLinkActive="Active"
+          class="nav-link d-flex align-items-center text-dark p-2 hover-border"
+        >
+          <i class="fa-solid fa-lock me-2"></i>
+          <span class="d-none d-sm-inline">Change Password</span>
+        </a>
+      </li>
+
+    </ul>
+
+    <hr class="w-100">
+
+    <!-- Logout -->
+    <div class="pb-4 w-100">
+      <button
+        class="btn d-flex align-items-center text-dark p-2 w-100"
+        (click)="logout()"
+      >
+        <i class="fa-solid fa-arrow-right-from-bracket text-danger me-3"></i>
+        <span class="d-none d-sm-inline">Logout</span>
+      </button>
+    </div>
+  </div>
