@@ -1,0 +1,13 @@
+*{
+    box-sizing: border-box;
+    font-family: url('../../../../../../../../public/assets/fonts/Inter/Inter-VariableFont_opsz\,wght.ttf');
+}
+
+input::placeholder{
+    font-weight: 200;
+    font-size: 14px;
+}
+
+label{
+    font-weight: 400;
+}

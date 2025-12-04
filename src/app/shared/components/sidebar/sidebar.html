@@ -1,0 +1,42 @@
+<div class="sidebar">
+
+  <ul class="nav flex-column mb-auto">
+    <li class="nav-item mb-3">
+      <a routerLink="/home/diplomas"
+         routerLinkActive="Active"
+         [routerLinkActiveOptions]="{ exact: true }"
+         class="nav-link d-flex align-items-center text-dark p-2 hover-border">
+        <i class="fa-solid fa-graduation-cap me-2"></i> Diplomas
+      </a>
+    </li>
+
+    <li class="nav-item mb-2">
+      <a routerLink="/home/setting"
+         routerLinkActive="Active"
+         class="nav-link d-flex align-items-center text-dark p-2 hover-border">
+        <i class="fa-regular fa-user me-2"></i> Account Settings
+      </a>
+    </li>
+  </ul>
+
+  <!-- Profile Section -->
+  <div class="profile-section" (click)="toggleMenu()">
+    <div class="profile-trigger d-flex align-items-center py-3">
+      <div class="profile-icon me-2">
+        {{ username.charAt(0) }}
+      </div>
+      <span class="fw-semibold">{{ username }}</span>
+    </div>
+
+    <div class="profile-menu shadow-sm" *ngIf="isMenuOpen">
+      <a class="menu-item" routerLink="/home/setting">
+        <i class="fa-regular fa-user me-2"></i> Account
+      </a>
+      <hr class="my-1">
+      <a class="menu-item text-danger" (click)="logout()">
+        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+      </a>
+    </div>
+  </div>
+
+</div>

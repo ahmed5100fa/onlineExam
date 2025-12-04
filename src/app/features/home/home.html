@@ -1,1 +1,30 @@
-<p>home works!</p>
+<div class="offcanvas offcanvas-start bl" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
+  <div class="offcanvas-header">
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="d-flex flex-column  justify-content-center mb-4">
+      <img src="./assets/images/1.png" alt="logo for sidebar" class="w-50">
+      <span class="text-primary h5 mt-3"><i class="fa-solid fa-folder"></i> Exam</span>
+    </div>
+    <app-sidebar></app-sidebar>
+  </div>
+</div>
+
+<div class="container-fluid ">
+  <div class="row">
+    <aside class="col-md-3 d-none d-md-block ps-0">
+      <div class="shadow-sm p-3 max-vh-100 bl">
+        <div class="d-flex flex-column justify-content-center mb-4">
+          <img src="./assets/images/1.png" alt="logo for sidebar" class="w-50">
+          <span class="text-primary h5 mt-3"><i class="fa-solid fa-folder"></i> Exam</span>
+        </div>
+        <app-sidebar></app-sidebar>
+      </div>
+    </aside>
+    <main class="col-md-9 side overflow">
+      <app-navbar></app-navbar>
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

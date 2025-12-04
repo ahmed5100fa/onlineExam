@@ -40,11 +40,13 @@ export class Signin {
     this._AuthService.Login(data).subscribe({
       next: (res) => {
         this.isLoading.set(false);
+        console.log(res);
+
         if (res.token) {
           if(typeof localStorage !== "undefined"){
             localStorage.setItem('authToken', res.token);
           }
-          this._Router.navigate(['home']);
+          this._Router.navigate(['/home']);
         }
       },
       error: (err) => {
