@@ -5,11 +5,15 @@ import { AuthService, RegisterCredentials } from 'auth';
 import { CommonModule } from '@angular/common';
 import { AlertComponent } from "../../../../shared/components/alert/alert";
 import { AuthBtn } from "../../../../shared/components/auth-btn/auth-btn";
+import { PasswordError } from "../../../../shared/components/password-error/password-error";
+import { RepasswordError } from "../../../../shared/components/repassword-error/repassword-error";
+import { matchPasswords } from '../../../../shared/validators/match-passwords.validator';
+
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, CommonModule, AlertComponent, AuthBtn],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule, AlertComponent, AuthBtn, PasswordError, RepasswordError],
   templateUrl: './signup.html',
   styleUrls: ['./signup.scss']
 })
@@ -22,16 +26,6 @@ export class Signup {
   apiError: string = '';
 
 
-
-matchPasswords(form: AbstractControl) {
-  const password = form.get('password')?.value;
-  const rePassword = form.get('rePassword')?.value;
-
-  if (password !== rePassword) {
-    return { mismatch: true };
-  }
-  return null;
-}
 
 RegisterForm: FormGroup = new FormGroup({
   firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
@@ -48,7 +42,7 @@ RegisterForm: FormGroup = new FormGroup({
     Validators.pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
   ]),
   rePassword: new FormControl('', [Validators.required])
-}, { validators: this.matchPasswords });
+}, { validators: matchPasswords("password" , "rePassword") });
 
 
 Register(data : RegisterCredentials){

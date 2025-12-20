@@ -1,0 +1,17 @@
+<div class="container py-4">
+
+  @for (item of Exam(); track $index) {
+    <app-quiz-card
+      [quizId]="item._id"
+      [quizeName]="item.title"
+      [questionNum]="item.numberOfQuestions"
+      [quizeDuration]="item.duration">
+    </app-quiz-card>
+  }
+
+  <!-- End of list -->
+  <div class="text-center text-muted mt-4">
+    End of list
+  </div>
+
+</div>

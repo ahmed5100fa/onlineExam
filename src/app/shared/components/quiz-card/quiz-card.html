@@ -1,0 +1,19 @@
+<div
+  class="p-3 mb-3 rounded"
+  style="background-color: #eef6ff; cursor: pointer;"
+  [routerLink]="['/home/questions', quizId]"
+>
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="text-primary mb-1">{{ quizeName }}</h5>
+      <small class="text-muted">
+        {{ questionNum }} Questions
+      </small>
+    </div>
+
+    <span class="text-muted">
+      <i class="far fa-clock me-1"></i>
+      Duration: {{ quizeDuration }} minutes
+    </span>
+  </div>
+</div>

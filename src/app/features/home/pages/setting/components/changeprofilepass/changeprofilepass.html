@@ -21,30 +21,12 @@
     <div class="form-group pb-3">
       <label for="exampleInputNewPassword" class="pb-1">New Password</label>
       <input type="password" class="form-control" id="exampleInputNewPassword" placeholder="New Password" formControlName="password" />
-      @if(changePass.get('password')?.touched && changePass.get('password')?.invalid) {
-          <div class="invalid-feedback d-block">
-            @if(changePass.get('password')?.errors?.['required']) {
-              <p>Password is required.</p>
-            }
-            @if(changePass.get('password')?.errors?.['minlength']) {
-              <p>Password must be at least 8 characters.</p>
-            }
-            @if(changePass.get('password')?.errors?.['pattern']) {
-              <p>Password must contain uppercase, lowercase, number, and special character.</p>
-            }
-          </div>
-        }
+      <app-password-error [formName]="changePass"></app-password-error>
     </div>
     <div class="form-group pb-3">
       <label for="exampleInputConfNewPassword" class="pb-1">Confirm New Password</label>
       <input type="password" class="form-control" id="exampleInputConfNewPassword" placeholder="Confirm New Password" formControlName="rePassword" />
-      @if(changePass.get('rePassword')?.touched && changePass.get('rePassword')?.invalid) {
-            <div class="invalid-feedback d-block">
-              @if(changePass.get('rePassword')?.errors?.['required']) {
-                <p>Confirm Password is required.</p>
-              }
-            </div>
-          }
+      <app-repassword-error [formName]="changePass"></app-repassword-error>
     </div>
     <app-alert [message]="apiError" type="danger"></app-alert>
     <button type="submit" routerLink="/verifycode" class="btn btn-auth w-100 mb-4" (click)="ChangePassword()">Update Password</button>

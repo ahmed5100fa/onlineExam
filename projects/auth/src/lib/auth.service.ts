@@ -22,7 +22,7 @@ export class AuthService implements AuthApi{
   }
 
   //changePassword
-  changePassword(data : ChangePasswordData , token : string):Observable<ChangePasswordResponse>{
+  changePassword(data : ChangePasswordData):Observable<ChangePasswordResponse>{
     return this._HttpClient.patch<ChangePasswordResponse>(AuthEndPoint.CHANGEPASS , data )
   }
 
@@ -42,22 +42,22 @@ export class AuthService implements AuthApi{
   }
 
   //logout
-  logout(token : string):Observable<LogoutResponse>{
+  logout():Observable<LogoutResponse>{
     return this._HttpClient.get<LogoutResponse>(AuthEndPoint.LOGOUT )
   }
 
   //get logged user info
-  getLoggedUserInfo(token : string):Observable<AuthResponse>{
+  getLoggedUserInfo():Observable<AuthResponse>{
      return this._HttpClient.get<AuthResponse>(AuthEndPoint.GETLOGGEDUSER)
   }
 
   // updateProfile
-  updateProfile(data : UpdateProfileData  , token : string):Observable<UpdateProfileResponse>{
+  updateProfile(data : UpdateProfileData):Observable<UpdateProfileResponse>{
     return this._HttpClient.put<UpdateProfileResponse>( AuthEndPoint.EDITPROFILE ,data )
   }
 
   //deleteAccount
-  deleteAccount(token : string):Observable<DeleteAccountResponse>{
+  deleteAccount():Observable<DeleteAccountResponse>{
     return this._HttpClient.delete<DeleteAccountResponse>(AuthEndPoint.DELETEME )
   }
 }

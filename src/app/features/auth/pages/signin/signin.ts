@@ -6,10 +6,11 @@ import { AuthService, LoginCredentials } from 'auth'
 import { Router } from '@angular/router';
 import { AlertComponent } from "../../../../shared/components/alert/alert";
 import { AuthBtn } from "../../../../shared/components/auth-btn/auth-btn";
+import { PasswordError } from "../../../../shared/components/password-error/password-error";
 
 @Component({
   selector: 'app-signin',
-  imports: [RouterLink, ReactiveFormsModule, CommonModule, AlertComponent, AuthBtn],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule, AlertComponent, AuthBtn, PasswordError],
   templateUrl: './signin.html',
   styleUrl: './signin.scss',
 })

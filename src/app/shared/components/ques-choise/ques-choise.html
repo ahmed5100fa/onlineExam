@@ -1,0 +1,11 @@
+<label class="option" [class.active]="checked" [for]="id">
+  <input
+    [id]="id"
+    type="radio"
+    [checked]="checked"
+    [value]="value"
+    name="choice"
+    (change)="onChange()"
+  />
+  <span>{{ Option }}</span>
+</label>

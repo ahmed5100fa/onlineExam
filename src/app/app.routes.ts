@@ -1,16 +1,13 @@
 import { Routes } from "@angular/router";
-import { ForgetPasswordComponent } from "./features/auth/pages/forget-password/forget-password";
 import { AuthLayout } from "./features/auth/pages/layout/auth-layout/auth-layout";
 import { Signin } from "./features/auth/pages/signin/signin";
 import { Signup } from "./features/auth/pages/signup/signup";
 import { Home } from "./features/home/home";
-import { Diplomas } from "./features/home/pages/diplomas/diplomas";
-import { Changeprofilepass } from "./features/home/pages/setting/components/changeprofilepass/changeprofilepass";
-import { Profile } from "./features/home/pages/setting/components/profile/profile";
-import { Setting } from "./features/home/pages/setting/setting";
+import { Diplomas } from "./features/home/diplomas/diplomas";
 import { authGuard } from "./shared/gardes/auth-guard";
 import { prevlinkGuard } from "./shared/gardes/prevlink-guard";
-import { Exams } from "./features/home/pages/exams/exams";
+import { Exams } from "./features/exams/pages/exams/exams";
+import { Questions } from "./features/questions/questions";
 
 export const routes: Routes = [
   {
@@ -18,9 +15,41 @@ export const routes: Routes = [
     component: AuthLayout,
     children: [
       { path: '', redirectTo: 'login', pathMatch: "full" },
-      { path: 'login', component: Signin, canActivate: [prevlinkGuard], title: "signIn" },
-      { path: 'signup', component: Signup, canActivate: [prevlinkGuard], title: "signUp" },
-      { path: 'forgetpassword', component: ForgetPasswordComponent, title: "forgetPassword" }
+      {
+        path: 'login',
+        component: Signin,
+        canActivate: [prevlinkGuard],
+        data: {
+          pageInfo: {
+            title: 'Sign In',
+            icon: 'fa-solid fa-sign-in-alt',
+            iconPosition: 'left'
+          }
+        }
+      },
+      {
+        path: 'signup',
+        component: Signup,
+        canActivate: [prevlinkGuard],
+        data: {
+          pageInfo: {
+            title: 'Sign Up',
+            icon: 'fa-solid fa-user-plus',
+            iconPosition: 'left'
+          }
+        }
+      },
+      {
+        path: 'forgetpassword',
+        loadComponent: () => import("./features/auth/pages/forget-password/forget-password").then((c) => c.ForgetPasswordComponent),
+        data: {
+          pageInfo: {
+            title: 'Forget Password',
+            icon: 'fa-solid fa-key',
+            iconPosition: 'left'
+          }
+        }
+      }
     ]
   },
   {
@@ -37,45 +66,86 @@ export const routes: Routes = [
         path: 'diplomas',
         component: Diplomas,
         data: {
-          title: '<i class="fa-solid fa-graduation-cap me-2"></i>Diplomas',
+          pageInfo: {
+            title: 'Diplomas',
+            icon: 'fa-solid fa-graduation-cap',
+            iconPosition: 'left'
+          },
           breadcrumb: 'Diplomas'
         }
       },
       {
-        path: 'exams',
+        path: 'exams/:id',
         component: Exams,
         data: {
-          title: '<i class="fa-solid fa-book-open"></i></i>Exams',
+          pageInfo: {
+            title: 'Exams',
+            icon: 'fa-solid fa-book-open',
+            iconPosition: 'left'
+          },
           breadcrumb: 'Exams'
         }
       },
       {
+        path: 'questions/:id',
+        component: Questions,
+        data: {
+          pageInfo: {
+            title: 'Questions',
+            icon: 'fa-regular fa-circle-question',
+            iconPosition: 'left'
+          },
+          breadcrumb: 'Questions'
+        }
+      },
+      {
         path: 'setting',
-        component: Setting,
+        loadComponent: () => import("./features/home/pages/setting/setting").then((c) => c.Setting),
+        data: {
+          pageInfo: {
+            title: 'Account Settings',
+            icon: 'fa-solid fa-cog',
+            iconPosition: 'left'
+          },
+          breadcrumb: 'Account Settings'
+        },
         children: [
-          { path: '', redirectTo: 'profile', pathMatch: "full" },
+          {
+            path: '',
+            redirectTo: 'profile',
+            pathMatch: "full"
+          },
           {
             path: 'profile',
-            component: Profile,
+            loadComponent: () => import("./features/profile/profile").then((c) => c.Profile),
             data: {
-              title: 'Profile',
+              pageInfo: {
+                title: 'Profile',
+                icon: 'fa-regular fa-user',
+                iconPosition: 'left'
+              },
               breadcrumb: 'Profile'
             }
           },
           {
             path: 'ChangePass',
-            component: Changeprofilepass,
+            loadComponent: () => import("./features/home/pages/setting/components/changeprofilepass/changeprofilepass").then((c) => c.Changeprofilepass),
             data: {
-              title: 'Change Password',
+              pageInfo: {
+                title: 'Change Password',
+                icon: 'fa-solid fa-key',
+                iconPosition: 'left'
+              },
               breadcrumb: 'Change Password'
             }
           }
-        ],
-        data: {
-          title: '<i class="fa-regular fa-user me-2"></i>Account Settings',
-          breadcrumb: 'Account Settings'
-        }
+        ]
       }
     ]
+  },
+  {
+    path: '**',
+    redirectTo: '/home/diplomas',
+    pathMatch: 'full'
   }
 ];

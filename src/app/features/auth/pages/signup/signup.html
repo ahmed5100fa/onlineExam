@@ -102,32 +102,14 @@
       <div class="mb-3">
         <label class="form-label">Password</label>
         <input type="password" class="form-control" formControlName="password" placeholder="Password" />
-        @if(RegisterForm.get('password')?.touched && RegisterForm.get('password')?.invalid) {
-          <div class="invalid-feedback d-block">
-            @if(RegisterForm.get('password')?.errors?.['required']) {
-              <p>Password is required.</p>
-            }
-            @if(RegisterForm.get('password')?.errors?.['minlength']) {
-              <p>Password must be at least 8 characters.</p>
-            }
-            @if(RegisterForm.get('password')?.errors?.['pattern']) {
-              <p>Password must contain uppercase, lowercase, number, and special character.</p>
-            }
-          </div>
-        }
+        <app-password-error [formName]="RegisterForm"></app-password-error>
       </div>
 
       <!-- confirm Password -->
       <div class="mb-4">
         <label class="form-label">Confirm Password</label>
         <input type="password" class="form-control" formControlName="rePassword" placeholder="Confirm Password" />
-          @if(RegisterForm.get('rePassword')?.touched && RegisterForm.get('rePassword')?.invalid) {
-            <div class="invalid-feedback d-block">
-              @if(RegisterForm.get('rePassword')?.errors?.['required']) {
-                <p>Confirm Password is required.</p>
-              }
-            </div>
-          }
+          <app-repassword-error [formName]="RegisterForm"></app-repassword-error>
 
           <!-- mismatch error from the form group -->
           @if(RegisterForm.errors?.['mismatch'] && RegisterForm.get('rePassword')?.touched) {
