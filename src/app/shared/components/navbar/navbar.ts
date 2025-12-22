@@ -1,13 +1,14 @@
-import { Component, Input, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { filter, Subscription } from 'rxjs';
 
-export interface PageInfo {
-  title: string;
-  icon?: string;
-  iconPosition?: 'left' | 'right';
+interface Breadcrumb {
+  label: string;
+  link?: string;
+  active: boolean;
 }
 
 @Component({
@@ -18,201 +19,123 @@ export interface PageInfo {
   styleUrl: './navbar.scss'
 })
 export class Navbar implements OnInit, OnDestroy {
+
   private router = inject(Router);
   private location = inject(Location);
-  private routerSubscription!: Subscription;
-
-  // Input properties
-  @Input() pageInfo: PageInfo = { title: 'Dashboard', icon: 'fa-solid fa-house', iconPosition: 'left' };
-  @Input() showHomeBreadcrumb: boolean = true;
-  @Input() homeBreadcrumbText: string = 'Home';
-  @Input() homeBreadcrumbLink: string = '/home/diplomas';
+  private sanitizer = inject(DomSanitizer);
 
   currentUrl = '';
-  breadcrumbText = '';
+  currentPage: SafeHtml = '';
+  breadcrumbs: Breadcrumb[] = [];
+
+  private sub!: Subscription;
 
   ngOnInit(): void {
-    console.log('Navbar initialized');
-
-    this.routerSubscription = this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+    this.sub = this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        console.log('NavigationEnd event:', event.url);
         this.currentUrl = event.url;
-        this.updatePageInfo();
+        this.updateUI();
       });
 
     this.currentUrl = this.router.url;
-    console.log('Initial URL:', this.currentUrl);
-    this.updatePageInfo();
+    this.updateUI();
   }
 
   ngOnDestroy(): void {
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
-    }
+    this.sub.unsubscribe();
   }
 
-  updatePageInfo(): void {
-    console.log('Updating page info for URL:', this.currentUrl);
-    const route = this.getCurrentRoute();
-    console.log('Current route data:', route?.data);
-
-    this.breadcrumbText = this.getPlainTitle();
-
-    // First, check for pageInfo in route data
-    if (route?.data?.['pageInfo']) {
-      console.log('Found pageInfo in route data:', route.data['pageInfo']);
-      this.pageInfo = route.data['pageInfo'];
-    }
-    // Then check for title (for backward compatibility)
-    else if (route?.data?.['title']) {
-      console.log('Found title in route data:', route.data['title']);
-      this.pageInfo = this.extractPageInfoFromTitle(route.data['title']);
-    }
-    // Fallback to default based on URL
-    else {
-      console.log('Using default page info based on URL');
-      this.pageInfo = this.getDefaultPageInfo();
-    }
-
-    console.log('Final pageInfo:', this.pageInfo);
+  private updateUI(): void {
+    this.buildBreadcrumbs();
+    this.currentPage = this.sanitizer.bypassSecurityTrustHtml(
+      this.getPageTitleWithIcon()
+    );
   }
 
-  private extractPageInfoFromTitle(titleHtml: string): PageInfo {
-    console.log('Extracting from title HTML:', titleHtml);
+  private buildBreadcrumbs(): void {
+    const crumbs: Breadcrumb[] = [];
 
-    // Try to extract icon from HTML
-    const iconMatch = titleHtml.match(/class="([^"]+)"/);
-    const icon = iconMatch ? iconMatch[1] : this.getDefaultIcon();
-
-    // Extract text from HTML
-    const textMatch = titleHtml.match(/>(.+)<\/i>/);
-    let titleText = '';
-
-    if (textMatch) {
-      // Remove any HTML tags from the text after the icon
-      titleText = textMatch[1].replace(/<[^>]*>/g, '');
-    } else {
-      // If no icon found, remove all HTML tags
-      titleText = titleHtml.replace(/<[^>]*>/g, '').trim();
+    // Diplomas (root)
+    if (this.currentUrl.includes('diplomas')) {
+      this.breadcrumbs = [{ label: 'Diplomas', active: true }];
+      return;
     }
 
-    return {
-      title: titleText || this.getPlainTitle(),
-      icon: icon,
-      iconPosition: 'left'
-    };
+    // Home always present unless diplomas page
+    crumbs.push({
+      label: 'Home',
+      link: '/home/diplomas',
+      active: false
+    });
+
+    // Exams and Questions handling
+    if (this.currentUrl.includes('exams') || this.currentUrl.includes('questions')) {
+
+      // نحاول نجيب examId من url
+      const examId = this.extractIdFromUrl('exams') || this.extractIdFromUrl('questions');
+
+      crumbs.push({
+        label: 'Exams',
+        link: examId ? `/home/exams/${examId}` : undefined,
+        active: !this.currentUrl.includes('questions')
+      });
+    }
+
+    // Questions
+    if (this.currentUrl.includes('questions')) {
+      crumbs.push({
+        label: 'Questions',
+        active: true
+      });
+    }
+
+    // Settings
+    if (this.currentUrl.includes('setting')) {
+      crumbs.push({
+        label: 'Settings',
+        active: true
+      });
+    }
+
+    this.breadcrumbs = crumbs;
   }
 
-  private getCurrentRoute(): any {
-    let route = this.router.routerState.root;
-    while (route.firstChild) {
-      route = route.firstChild;
+  private extractIdFromUrl(type: 'exams' | 'questions'): string | null {
+    const parts = this.currentUrl.split('/');
+    const index = parts.indexOf(type);
+    if (index !== -1 && parts[index + 1]) {
+      return parts[index + 1];
     }
-    return route;
+    return null;
   }
 
-  private getDefaultPageInfo(): PageInfo {
-    const path = this.currentUrl.toLowerCase();
-    console.log('Getting default page info for path:', path);
+  private getPageTitleWithIcon(): string {
 
-    if (path.includes('setting') || path.includes('profile') || path.includes('changepass')) {
-      return {
-        title: 'Account Settings',
-        icon: 'fa-regular fa-user',
-        iconPosition: 'left'
-      };
-    } else if (path.includes('diplomas')) {
-      return {
-        title: 'Diplomas',
-        icon: 'fa-solid fa-graduation-cap',
-        iconPosition: 'left'
-      };
-    } else if (path.includes('exams')) {
-      return {
-        title: 'Exams',
-        icon: 'fa-solid fa-book-open',
-        iconPosition: 'left'
-      };
-    } else if (path.includes('questions')) {
-      return {
-        title: 'Questions',
-        icon: 'fa-regular fa-circle-question',
-        iconPosition: 'left'
-      };
-    }
-    return {
-      title: 'Dashboard',
-      icon: 'fa-solid fa-house',
-      iconPosition: 'left'
-    };
-  }
-
-  private getDefaultIcon(): string {
-    const path = this.currentUrl.toLowerCase();
-
-    if (path.includes('setting') || path.includes('profile') || path.includes('changepass')) {
-      return 'fa-regular fa-user';
-    } else if (path.includes('diplomas')) {
-      return 'fa-solid fa-graduation-cap';
-    } else if (path.includes('exams')) {
-      return 'fa-solid fa-book-open';
-    } else if (path.includes('questions')) {
-      return 'fa-regular fa-circle-question';
-    }
-    return 'fa-solid fa-house';
-  }
-
-  private getPlainTitle(): string {
-    let title = '';
-    const route = this.getCurrentRoute();
-
-    if (route?.data?.['pageInfo']) {
-      title = route.data['pageInfo'].title;
-    } else if (route?.data?.['title']) {
-      title = route.data['title'].replace(/<[^>]*>/g, '').trim();
+    if (this.currentUrl.includes('diplomas')) {
+      return `<i class="fa-solid fa-graduation-cap me-2"></i> Diplomas`;
     }
 
-    if (!title) {
-      const path = this.currentUrl.toLowerCase();
-
-      if (path.includes('setting') || path.includes('profile') || path.includes('changepass')) {
-        title = 'Account Settings';
-      } else if (path.includes('diplomas')) {
-        title = 'Diplomas';
-      } else if (path.includes('exams')) {
-        title = 'Exams';
-      } else if (path.includes('questions')) {
-        title = 'Questions';
-      } else {
-        title = 'Dashboard';
-      }
+    if (this.currentUrl.includes('exams')) {
+      return `<i class="fa-solid fa-book-open"></i> Exams`;
     }
 
-    console.log('Plain title:', title);
-    return title;
+    if (this.currentUrl.includes('questions')) {
+      return `<i class="fa-regular fa-circle-question me-2"></i> Questions`;
+    }
+
+    if (this.currentUrl.includes('setting')) {
+      return `<i class="fa-regular fa-user"></i> Account Settings`;
+    }
+
+    return `<i class="fa-solid fa-house me-2"></i> Dashboard`;
   }
 
   canGoBack(): boolean {
-    return !['/home/diplomas', '/home'].includes(this.currentUrl);
+    return !['/home', '/home/diplomas'].includes(this.currentUrl);
   }
 
   goBack(): void {
     this.location.back();
-  }
-
-  isDiplomasPage(): boolean {
-    return this.breadcrumbText === 'Diplomas' || this.currentUrl.includes('diplomas');
-  }
-
-  // Helper method to check if icon exists
-  hasIcon(): boolean {
-    return !!this.pageInfo?.icon;
-  }
-
-  // Helper method to get icon position class
-  getIconPositionClass(): string {
-    return this.pageInfo.iconPosition === 'right' ? 'ms-2' : 'me-2';
   }
 }
