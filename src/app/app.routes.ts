@@ -100,7 +100,7 @@ export const routes: Routes = [
       },
       {
         path: 'setting',
-        loadComponent: () => import("./features/home/pages/setting/setting").then((c) => c.Setting),
+        loadComponent: () => import("./features/setting/setting").then((c) => c.Setting),
         data: {
           pageInfo: {
             title: 'Account Settings',
@@ -129,7 +129,7 @@ export const routes: Routes = [
           },
           {
             path: 'ChangePass',
-            loadComponent: () => import("./features/home/pages/setting/components/changeprofilepass/changeprofilepass").then((c) => c.Changeprofilepass),
+            loadComponent: () => import("./features/setting/components/changeprofilepass/changeprofilepass").then((c) => c.Changeprofilepass),
             data: {
               pageInfo: {
                 title: 'Change Password',

@@ -3,7 +3,7 @@ import { Router, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Sidebar } from "../../shared/components/sidebar/sidebar";
 import { Navbar } from "../../shared/components/navbar/navbar";
 import { ToastrModule } from 'ngx-toastr';
-import { HomeSidebarHeader } from "../../shared/components/home-sidebar-header/home-sidebar-header";
+import { HomeSidebarHeader } from "./main-layout/home-sidebar-header/home-sidebar-header";
 @Component({
   selector: 'app-home',
   imports: [RouterOutlet, Sidebar, Navbar, ToastrModule, HomeSidebarHeader],

@@ -8,6 +8,7 @@ import { AuthBtn } from "../../../../shared/components/auth-btn/auth-btn";
 import { PasswordError } from "../../../../shared/components/password-error/password-error";
 import { RepasswordError } from "../../../../shared/components/repassword-error/repassword-error";
 import { matchPasswords } from '../../../../shared/validators/match-passwords.validator';
+import { validat } from '../../../../shared/validators/password-validators';
 
 
 @Component({
@@ -31,7 +32,7 @@ RegisterForm: FormGroup = new FormGroup({
   firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
   lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
   username: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z0-9_]+$/)]),
-  email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]),
+  email: new FormControl('', [Validators.required, Validators.pattern(validat.emailPattern)]),
   phone: new FormControl('', [
   Validators.required,
   Validators.pattern(/^01[0125][0-9]{8}$/)
@@ -39,7 +40,7 @@ RegisterForm: FormGroup = new FormGroup({
   password: new FormControl('', [
     Validators.required,
     Validators.minLength(8),
-    Validators.pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+    Validators.pattern(validat.passPattern)
   ]),
   rePassword: new FormControl('', [Validators.required])
 }, { validators: matchPasswords("password" , "rePassword") });

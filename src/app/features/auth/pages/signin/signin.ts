@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { AlertComponent } from "../../../../shared/components/alert/alert";
 import { AuthBtn } from "../../../../shared/components/auth-btn/auth-btn";
 import { PasswordError } from "../../../../shared/components/password-error/password-error";
+import { validat } from '../../../../shared/validators/password-validators';
 
 @Component({
   selector: 'app-signin',
@@ -25,12 +26,12 @@ export class Signin {
   LogginForm: FormGroup = new FormGroup({
     email: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+      Validators.pattern(validat.emailPattern)
     ]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
-      Validators.pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+      Validators.pattern(validat.passPattern)
     ])
   });
 

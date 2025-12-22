@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthResponse, AuthService, UpdateProfileData } from 'auth';
 import Swal from 'sweetalert2';
 import { Subscription } from 'rxjs';
+import { validat } from '../../shared/validators/password-validators';
 
 @Component({
   selector: 'app-profile',
@@ -24,7 +25,7 @@ export class Profile implements OnDestroy {
     username: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z0-9_]+$/)]),
     firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
     lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-    email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]),
+    email: new FormControl('', [Validators.required, Validators.pattern(validat.emailPattern)]),
     phone: new FormControl('', [
       Validators.required,
       Validators.pattern(/^01[0125][0-9]{8}$/)

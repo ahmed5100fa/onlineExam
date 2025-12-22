@@ -39,7 +39,7 @@
                     [class]="{'is-invalid': LogginForm.get('password')?.touched && LogginForm.get('password')?.invalid}"
                 />
 
-                <app-password-error [formName]="LogginForm"></app-password-error>
+                <app-password-error [formName]="LogginForm" [InputName]="'password'"></app-password-error>
             </div>
 
             <a routerLink="/forgetpassword" class="text-primary text-decoration-none fw-lighter d-block text-end pb-3">

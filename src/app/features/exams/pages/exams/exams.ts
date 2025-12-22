@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { QuizCard } from "../../../../shared/components/quiz-card/quiz-card";
+import { QuizCard } from "../../ui/components/quiz-card/quiz-card";
 import { ExamService } from '../../services/exam-service';
 import type { Exam } from '../../exam-inter';
 import { Subscription } from 'rxjs';

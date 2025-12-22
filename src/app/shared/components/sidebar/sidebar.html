@@ -28,7 +28,8 @@
       <span class="fw-semibold">{{ username }}</span>
     </div>
 
-    <div class="profile-menu shadow-sm" *ngIf="isMenuOpen">
+    @if(isMenuOpen){
+    <div class="profile-menu shadow-sm" >
       <a class="menu-item" routerLink="/home/setting">
         <i class="fa-regular fa-user me-2"></i> Account
       </a>
@@ -37,6 +38,8 @@
         <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
       </a>
     </div>
+    }
+
   </div>
 
 </div>

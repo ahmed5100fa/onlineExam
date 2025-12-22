@@ -2,12 +2,13 @@ import { Component, inject, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, ChangePasswordData } from 'auth';
-import { AlertComponent } from "../../../../../../shared/components/alert/alert";
 import Swal from 'sweetalert2';
-import { PasswordError } from "../../../../../../shared/components/password-error/password-error";
-import { RepasswordError } from "../../../../../../shared/components/repassword-error/repassword-error";
-import { matchPasswords } from '../../../../../../shared/validators/match-passwords.validator';
 import { Subscription } from 'rxjs';
+import { AlertComponent } from '../../../../shared/components/alert/alert';
+import { PasswordError } from '../../../../shared/components/password-error/password-error';
+import { RepasswordError } from '../../../../shared/components/repassword-error/repassword-error';
+import { validat } from '../../../../shared/validators/password-validators';
+import { matchPasswords } from '../../../../shared/validators/match-passwords.validator';
 
 @Component({
   selector: 'app-changeprofilepass',
@@ -27,12 +28,12 @@ export class Changeprofilepass implements OnDestroy {
     oldPassword: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
-      Validators.pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+      Validators.pattern(validat.passPattern)
     ]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
-      Validators.pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+      Validators.pattern(validat.passPattern)
     ]),
     rePassword: new FormControl('', [Validators.required])
   }, {

@@ -9,4 +9,5 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class PasswordError {
   @Input() formName !: FormGroup ;
+  @Input() InputName !: string;
 }

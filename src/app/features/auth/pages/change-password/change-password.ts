@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService, ChangePasswordData, ResetPasswordData } from 'auth';
 import { AlertComponent } from "../../../../shared/components/alert/alert";
 import { AuthBtn } from "../../../../shared/components/auth-btn/auth-btn";
+import { validat } from '../../../../shared/validators/password-validators';
 
 @Component({
   selector: 'app-change-password',
@@ -23,12 +24,12 @@ export class ChangePassword {
   changeForm: FormGroup = new FormGroup({
     email: new FormControl('', [
         Validators.required,
-        Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+        Validators.pattern(validat.emailPattern)
       ]),
     newPassword: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
-      Validators.pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+      Validators.pattern(validat.passPattern)
     ])
   });
 

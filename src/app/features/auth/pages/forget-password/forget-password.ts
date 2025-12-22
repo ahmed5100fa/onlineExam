@@ -6,6 +6,7 @@ import { NgClass } from '@angular/common';
 import { VerfiyCode } from "../verfiy-code/verfiy-code";
 import { AlertComponent } from "../../../../shared/components/alert/alert";
 import { AuthBtn } from "../../../../shared/components/auth-btn/auth-btn";
+import { validat } from '../../../../shared/validators/password-validators';
 
 @Component({
   selector: 'app-forget-password',
@@ -32,7 +33,7 @@ export class ForgetPasswordComponent {
   ForgetForm: FormGroup = new FormGroup({
     email: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+      Validators.pattern(validat.emailPattern)
     ])
   })
 

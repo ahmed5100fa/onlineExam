@@ -4,24 +4,12 @@
     <div class="form-group pb-3">
       <label for="exampleInputNewPassword" class="pb-1">Current Password</label>
       <input type="password" class="form-control" id="exampleInputNewPassword" placeholder="New Password" formControlName="oldPassword" />
-      @if(changePass.get('oldPassword')?.touched && changePass.get('oldPassword')?.invalid) {
-          <div class="invalid-feedback d-block">
-            @if(changePass.get('oldPassword')?.errors?.['required']) {
-              <p>Password is required.</p>
-            }
-            @if(changePass.get('oldPassword')?.errors?.['minlength']) {
-              <p>Password must be at least 8 characters.</p>
-            }
-            @if(changePass.get('oldPassword')?.errors?.['pattern']) {
-              <p>Password must contain uppercase, lowercase, number, and special character.</p>
-            }
-          </div>
-        }
+      <app-password-error [formName]="changePass" [InputName]="'oldPassword'"></app-password-error>
     </div>
     <div class="form-group pb-3">
       <label for="exampleInputNewPassword" class="pb-1">New Password</label>
       <input type="password" class="form-control" id="exampleInputNewPassword" placeholder="New Password" formControlName="password" />
-      <app-password-error [formName]="changePass"></app-password-error>
+      <app-password-error [formName]="changePass" [InputName]="'password'"></app-password-error>
     </div>
     <div class="form-group pb-3">
       <label for="exampleInputConfNewPassword" class="pb-1">Confirm New Password</label>

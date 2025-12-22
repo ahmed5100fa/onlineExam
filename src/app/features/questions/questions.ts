@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { QuestionServ } from './services/question-serv';
 import { Answer, Question, Root } from './Interfaces/question-inter';
@@ -6,6 +6,10 @@ import { QuesChoise } from '../../shared/components/ques-choise/ques-choise';
 import { CommonModule } from '@angular/common';
 import { Finishing } from "./pages/finishing/finishing";
 import { Subscription } from 'rxjs';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
+
+// Register Chart.js components
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-questions',
@@ -13,11 +17,15 @@ import { Subscription } from 'rxjs';
   templateUrl: './questions.html',
   styleUrl: './questions.scss',
 })
-export class Questions implements OnInit, OnDestroy {
+export class Questions implements OnInit, OnDestroy, AfterViewInit {
   private _activatedRoute = inject(ActivatedRoute);
   private _questionServ = inject(QuestionServ);
 
   private subscriptions = new Subscription();
+
+  // Use ViewChild to reference the timer chart canvas
+  @ViewChild('timerChartCanvas') timerChartCanvas!: ElementRef<HTMLCanvasElement>;
+  timerChart: Chart | undefined;
 
   // Signals
   examId = signal<string>('');
@@ -51,9 +59,18 @@ export class Questions implements OnInit, OnDestroy {
     this.subscriptions.add(routeSub);
   }
 
+  ngAfterViewInit(): void {
+    // Create the timer chart when view is ready
+    this.createTimerChart();
+  }
+
   ngOnDestroy(): void {
     this.clearTimer();
     this.subscriptions.unsubscribe();
+    // Destroy the chart
+    if (this.timerChart) {
+      this.timerChart.destroy();
+    }
   }
 
   private clearTimer(): void {
@@ -73,6 +90,7 @@ export class Questions implements OnInit, OnDestroy {
     const startTime = savedTime !== undefined ? savedTime : duration;
 
     this.currentTimer.set(startTime);
+    this.updateTimerChart();
 
     this.timerInterval = setInterval(() => {
       this.currentTimer.update(time => {
@@ -90,21 +108,79 @@ export class Questions implements OnInit, OnDestroy {
         return newTime;
       });
 
-      this.updateProgressCircle();
+      this.updateTimerChart();
     }, 1000);
   }
 
-  private updateProgressCircle(): void {
-    const circle = document.querySelector('.progress-ring__circle') as SVGCircleElement;
-    if (circle) {
-      const duration = this.questionDuration();
-      const currentTime = this.currentTimer();
-      const progress = currentTime / duration;
-      const circumference = 2 * Math.PI * 30;
-      const offset = circumference * (1 - progress);
-      circle.style.strokeDashoffset = offset.toString();
-      circle.style.strokeDasharray = circumference.toString();
+  private createTimerChart(): void {
+    const canvas = this.timerChartCanvas?.nativeElement;
+    if (!canvas) return;
+
+    // Destroy existing chart if it exists
+    if (this.timerChart) {
+      this.timerChart.destroy();
     }
+
+    const duration = this.questionDuration();
+    const remainingTime = this.currentTimer();
+    const elapsedTime = duration - remainingTime;
+
+    const config: ChartConfiguration<'doughnut'> = {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [elapsedTime, remainingTime],
+          backgroundColor: [
+            '#E8E8E8', // Gray for elapsed time
+            '#4CAF50'   // Green for remaining time
+          ],
+          borderWidth: 0,
+          hoverOffset: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: false
+          }
+        },
+        cutout: '85%',
+        animation: {
+          animateRotate: true,
+          animateScale: false
+        }
+      }
+    };
+
+    this.timerChart = new Chart(canvas, config);
+  }
+
+  private updateTimerChart(): void {
+    if (!this.timerChart) {
+      this.createTimerChart();
+      return;
+    }
+
+    const duration = this.questionDuration();
+    const remainingTime = this.currentTimer();
+    const elapsedTime = Math.max(0, duration - remainingTime);
+
+    // Update chart data
+    this.timerChart.data.datasets[0].data = [elapsedTime, remainingTime];
+
+    // Change color to red when time is running out (last 10 seconds)
+    if (remainingTime <= 10) {
+      this.timerChart.data.datasets[0].backgroundColor = ['#E8E8E8', '#F44336'];
+    } else {
+      this.timerChart.data.datasets[0].backgroundColor = ['#E8E8E8', '#4CAF50'];
+    }
+
+    this.timerChart.update('none'); // 'none' prevents animation for smoother updates
   }
 
   private autoMoveToNextQuestion(): void {
@@ -142,7 +218,6 @@ export class Questions implements OnInit, OnDestroy {
         this.updateCurrentQuestion();
       },
       error: (err) => {
-        console.error('Error loading questions:', err);
       }
     });
     this.subscriptions.add(sub);
@@ -169,7 +244,6 @@ export class Questions implements OnInit, OnDestroy {
   submitResult(data: Root) {
     const sub = this._questionServ.submitQuestions(data).subscribe({
       next: (res) => {
-        console.log(res);
         this.resultWron.set(res.WrongQuestions);
         this.totalcorr.set(res.total);
         this.wrong.set(res.wrong);
@@ -199,8 +273,6 @@ export class Questions implements OnInit, OnDestroy {
         correct: selectedAnswer ? selectedAnswer.key : undefined
       };
     });
-
-    console.log('Formatted Answers:', formattedAnswers);
 
     const data: Root = {
       answers: formattedAnswers,
@@ -238,6 +310,13 @@ export class Questions implements OnInit, OnDestroy {
     // reset timer
     this.remainingTimes.set(new Map());
     this.clearTimer();
+
+    // Destroy and recreate timer chart
+    if (this.timerChart) {
+      this.timerChart.destroy();
+      this.timerChart = undefined;
+    }
+
     this.updateCurrentQuestion();
   }
 }
