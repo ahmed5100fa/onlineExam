@@ -1,0 +1,50 @@
+<header class="py-3">
+  <div class="container-fluid align-items-center d-flex">
+    <button
+      class="btn btn-outline-secondary d-md-none me-2"
+      type="button"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#offcanvasSidebar">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        @for (item of breadcrumbs; track $index) {
+          <li class="breadcrumb-item" [class.active]="item.active">
+            @if (!item.active) {
+              <a [routerLink]="item.link">{{ item.label }}</a>
+            } @else {
+              {{ item.label }}
+            }
+          </li>
+        }
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container-fluid mt-2">
+    <div class="d-flex align-items-center w-100">
+
+      @if (canGoBack()) {
+        <div class="p-1">
+          <button
+            class="btn btn-outline-primary rounded-0 d-flex align-items-center justify-content-center"
+            style="height:60px"
+            (click)="goBack()">
+            <i class="fa-solid fa-angle-left"></i>
+          </button>
+        </div>
+      }
+
+      <div class="flex-grow-1">
+        <div
+          class="bg-primary text-white fw-bold h4 mb-0 d-flex align-items-center ps-3"
+          style="height:60px">
+          <span [innerHTML]="currentPage"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>

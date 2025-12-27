@@ -39,19 +39,7 @@
                     [class]="{'is-invalid': LogginForm.get('password')?.touched && LogginForm.get('password')?.invalid}"
                 />
 
-                @if(LogginForm.get('password')?.touched && LogginForm.get('password')?.invalid) {
-                    <div class="invalid-feedback d-block">
-                        @if(LogginForm.get('password')?.errors?.['required']) {
-                            <p>Password is required.</p>
-                        }
-                        @if(LogginForm.get('password')?.errors?.['minlength']) {
-                            <p>Password must be at least 8 characters.</p>
-                        }
-                        @if(LogginForm.get('password')?.errors?.['pattern']) {
-                            <p>Password must contain uppercase, lowercase, number, and special character.</p>
-                        }
-                    </div>
-                }
+                <app-password-error [formName]="LogginForm" [InputName]="'password'"></app-password-error>
             </div>
 
             <a routerLink="/forgetpassword" class="text-primary text-decoration-none fw-lighter d-block text-end pb-3">

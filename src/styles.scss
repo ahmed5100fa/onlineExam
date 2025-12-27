@@ -1,12 +1,14 @@
+:root {
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-white: #fff;
+  --color-black: #000;
+}
+
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-}
-
-* {
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
 }
 
 @font-face {
@@ -14,18 +16,22 @@ html, body {
   src: url('../public/assets/fonts/Inter/Inter-VariableFont_opsz\,wght.ttf') format('truetype');
 }
 
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif !important;
+}
 
-    .btn-auth {
-      background-color: #2563eb;
-      color: #fff;
-      font-weight: 500;
-      border: none;
-      width: 100%;
-      padding: 12px;
-      border-radius: 5px;
-    }
+.btn-auth {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  font-weight: 500;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 5px;
+}
 
-    .btn-auth:hover {
-      background-color: #1d4ed8;
-      color: white;
-    }
+.btn-auth:hover {
+  background-color: var(--color-primary-hover);
+  color: var(--color-white);
+}

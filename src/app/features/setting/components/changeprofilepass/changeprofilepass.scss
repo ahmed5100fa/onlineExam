@@ -1,0 +1,13 @@
+*{
+    box-sizing: border-box;
+    font-family: url(/assets/images/3.png);
+}
+
+input::placeholder{
+    font-weight: 200;
+    font-size: 14px;
+}
+
+label{
+    font-weight: 400;
+}

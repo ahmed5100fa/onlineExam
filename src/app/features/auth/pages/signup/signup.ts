@@ -5,11 +5,16 @@ import { AuthService, RegisterCredentials } from 'auth';
 import { CommonModule } from '@angular/common';
 import { AlertComponent } from "../../../../shared/components/alert/alert";
 import { AuthBtn } from "../../../../shared/components/auth-btn/auth-btn";
+import { PasswordError } from "../../../../shared/components/password-error/password-error";
+import { RepasswordError } from "../../../../shared/components/repassword-error/repassword-error";
+import { matchPasswords } from '../../../../shared/validators/match-passwords.validator';
+import { validat } from '../../../../shared/validators/password-validators';
+
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, CommonModule, AlertComponent, AuthBtn],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule, AlertComponent, AuthBtn, PasswordError, RepasswordError],
   templateUrl: './signup.html',
   styleUrls: ['./signup.scss']
 })
@@ -23,21 +28,11 @@ export class Signup {
 
 
 
-matchPasswords(form: AbstractControl) {
-  const password = form.get('password')?.value;
-  const rePassword = form.get('rePassword')?.value;
-
-  if (password !== rePassword) {
-    return { mismatch: true };
-  }
-  return null;
-}
-
 RegisterForm: FormGroup = new FormGroup({
   firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
   lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
   username: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z0-9_]+$/)]),
-  email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]),
+  email: new FormControl('', [Validators.required, Validators.pattern(validat.emailPattern)]),
   phone: new FormControl('', [
   Validators.required,
   Validators.pattern(/^01[0125][0-9]{8}$/)
@@ -45,10 +40,10 @@ RegisterForm: FormGroup = new FormGroup({
   password: new FormControl('', [
     Validators.required,
     Validators.minLength(8),
-    Validators.pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+    Validators.pattern(validat.passPattern)
   ]),
   rePassword: new FormControl('', [Validators.required])
-}, { validators: this.matchPasswords });
+}, { validators: matchPasswords("password" , "rePassword") });
 
 
 Register(data : RegisterCredentials){

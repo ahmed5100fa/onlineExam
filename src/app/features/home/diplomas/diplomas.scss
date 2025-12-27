@@ -1,0 +1,49 @@
+.card {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 300px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+
+
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  button {
+    position: absolute;
+    bottom: 20px;
+    margin: auto;
+    background: rgba(13, 110, 253, 0.6);
+    border: 0px ;
+    color: #fff;
+    font-weight: 600;
+    transition: all 0.5s ease;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    text-transform: uppercase;
+
+    &:hover {
+      background: rgba(13, 110, 253, 0.9);
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+    }
+  }
+
+  &.no-image {
+    background-image: url('/assets/images/placeholder.png');
+    background-color: #f8f9fa;
+  }
+}
+
+

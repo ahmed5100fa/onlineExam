@@ -1,0 +1,59 @@
+<div class="container my-4">
+  <div class="row">
+    <!-- Chart + Legend -->
+    <div class="col-md-4 d-flex flex-column align-items-center">
+      <div class="chart-container position-relative" style="height: 200px; width: 200px;">
+        <canvas #chartCanvas id="resultsChart"></canvas>
+        <div class="position-absolute top-50 start-50 translate-middle text-center">
+
+        </div>
+      </div>
+
+      <ul class="list-unstyled mt-3">
+        <li class="d-flex align-items-center mb-2">
+          <div style="width: 20px; height: 20px; background-color: #4CAF50; margin-right: 10px; border-radius: 3px;"></div>
+          <span>Correct: {{correct}}</span>
+        </li>
+        <li class="d-flex align-items-center">
+          <div style="width: 20px; height: 20px; background-color: #F44336; margin-right: 10px; border-radius: 3px;"></div>
+          <span>Incorrect: {{wrong}}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Questions List -->
+    <div class="col-md-8 overflow-auto" style="height: 50vh;">
+      @for (item of resultWron; track $index) {
+        <app-finish-question
+          [questionName]="item.Question"
+          [correctAnswer]="item.correctAnswer"
+          [wrongAnswer]="item.inCorrectAnswer">
+        </app-finish-question>
+      }
+      @if (resultWron?.length === 0) {
+        <div class="text-center text-muted p-5">
+          <h5>Perfect Score! 🎉</h5>
+          <p>All answers are correct!</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex justify-content-between mt-4">
+    <button class="btn btn-light border d-flex align-items-center gap-2" (click)="restartQuiz()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 1 1 .908-.418A6 6 0 1 1 8 2v1z"/>
+        <path d="M8 1v4l3-3-3-3v4z"/>
+      </svg>
+      Restart
+    </button>
+
+    <button class="btn btn-primary d-flex align-items-center gap-2" routerLink="/home">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-folder2-open" viewBox="0 0 16 16">
+        <path d="M1 3a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H8.414l-1.707-1.707A1 1 0 0 0 6.586 1H1zm11 3H4a1 1 0 0 0-1 1v7h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/>
+      </svg>
+      Explore
+    </button>
+  </div>
+</div>

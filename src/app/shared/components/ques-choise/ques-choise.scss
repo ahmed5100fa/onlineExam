@@ -1,0 +1,20 @@
+
+    .option {
+      background: #f7f7f7;
+      padding: 14px 16px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      position: relative;
+
+      input {
+        width: 18px;
+        height: 18px;
+      }
+
+      &.active {
+        background: #eef4ff;
+      }
+    }

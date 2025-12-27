@@ -1,0 +1,106 @@
+<div class="d-flex align-items-center justify-content-start p-3 w-100">
+  <div class="ProfileSection w-100">
+    <form [formGroup]="ProfileForm">
+      <div class="row">
+         <!-- first name -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">First name</label>
+          <input type="text" class="form-control" formControlName="firstName" placeholder="Ahmed" />
+
+          @if(ProfileForm.get("firstName")?.touched && ProfileForm.get("firstName")?.invalid){
+            <div class="invalid-feedback d-block">
+              @if(ProfileForm.get("firstName")?.errors?.['required']){
+                <p>First Name is required</p>
+              }
+
+              @if(ProfileForm.get("firstName")?.errors?.["minlength"]){
+                <p>First Name must be at least 2 characters.</p>
+              }
+            </div>
+          }
+        </div>
+        <!-- last name -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Last name</label>
+          <input type="text" class="form-control" formControlName="lastName" placeholder="Abdullah"  />
+          @if (ProfileForm.get('lastName')?.touched && ProfileForm.get('lastName')?.invalid) {
+            <div class="invalid-feedback d-block">
+              @if (ProfileForm.get('lastName')?.errors?.['required']) {
+                <p>Last Name is required</p>
+              }
+              @if (ProfileForm.get('lastName')?.errors?.['minlength']) {
+                <p>Last Name must be at least 2 characters.</p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      <!-- username -->
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" formControlName="username" placeholder="user1234" />
+        @if (ProfileForm.get('username')?.touched && ProfileForm.get('username')?.invalid) {
+          <div class="invalid-feedback d-block">
+            @if(ProfileForm.get('username')?.errors?.['required']){
+              <p>UserName is required</p>
+            }
+            @if (ProfileForm.get('username')?.errors?.['minlength']) {
+              <p>UserName must be at least 3 characters.</p>
+            }
+            @if (ProfileForm.get('username')?.errors?.['pattern']) {
+              <p>Username can only contain letters, numbers, and underscores</p>
+            }
+          </div>
+        }
+      </div>
+      <!-- email -->
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" formControlName="email" placeholder="user@example.com" />
+        @if(ProfileForm.get('email')?.touched && ProfileForm.get('email')?.invalid) {
+            <div class="invalid-feedback d-block">
+                 @if(ProfileForm.get('email')?.errors?.['required']) {
+                      <p>Email is required.</p>
+                  }
+                  @if(ProfileForm.get('email')?.errors?.['email'] || ProfileForm.get('email')?.errors?.['pattern']) {
+                      <p>Invalid email format.</p>
+                  }
+            </div>
+        }
+      </div>
+      <!-- phone -->
+      <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">
+              <img src="https://flagcdn.com/w20/eg.png" alt="EG" />
+              <span>+20</span>
+            </span>
+          </div>
+          <input type="text" class="form-control" placeholder="1012345678" formControlName="phone" />
+        </div>
+        @if(ProfileForm.get("phone")?.touched && ProfileForm.get('phone')?.invalid){
+          <div class="invalid-feedback d-block">
+            @if(ProfileForm.get("phone")?.errors?.['required']){
+              <p>Phone number is required</p>
+            }
+            @if(ProfileForm.get('phone')?.errors?.['pattern']){
+              <p>Please enter a valid phone number</p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- btns -->
+       <div class="row mt-3">
+        <div class="col-md-6 col-12">
+          <button class="btn btn-outline-danger w-100 mb-3" (click)="deleteAccount()">Delete My Account</button>
+        </div>
+        <div class="col-md-6 col-12">
+          <button class="btn btn-outline-primary w-100" (click)="saveChanges()">Save Changes</button>
+        </div>
+       </div>
+    </form>
+  </div>
+</div>
