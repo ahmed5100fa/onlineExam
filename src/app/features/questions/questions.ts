@@ -1,78 +1,92 @@
-import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  ViewChild,
+  ElementRef,
+  AfterViewInit
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+
 import { QuestionServ } from './services/question-serv';
 import { Answer, Question, Root } from './Interfaces/question-inter';
 import { QuesChoise } from '../../shared/components/ques-choise/ques-choise';
-import { CommonModule } from '@angular/common';
-import { Finishing } from "./pages/finishing/finishing";
-import { Subscription } from 'rxjs';
+import { Finishing } from './pages/finishing/finishing';
+
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 
-// Register Chart.js components
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-questions',
-  imports: [QuesChoise, CommonModule, Finishing],
+  standalone: true,
+  imports: [CommonModule, QuesChoise, Finishing],
   templateUrl: './questions.html',
   styleUrl: './questions.scss',
 })
 export class Questions implements OnInit, OnDestroy, AfterViewInit {
-  private _activatedRoute = inject(ActivatedRoute);
-  private _questionServ = inject(QuestionServ);
 
-  private subscriptions = new Subscription();
+  private route = inject(ActivatedRoute);
+  private questionServ = inject(QuestionServ);
+  private subs = new Subscription();
 
-  // Use ViewChild to reference the timer chart canvas
-  @ViewChild('timerChartCanvas') timerChartCanvas!: ElementRef<HTMLCanvasElement>;
-  timerChart: Chart | undefined;
+  @ViewChild('timerChartCanvas')
+  timerChartCanvas!: ElementRef<HTMLCanvasElement>;
 
-  // Signals
-  examId = signal<string>('');
-  quistionAnswer = signal<Answer[]>([]);
-  quistions = signal<Question[]>([]);
-  quistionLength = signal<number>(0);
-  questionIndex = signal<number>(0);
-  questionDuration = signal<number>(0);
-  theQuession = signal<string>('');
-  examName = signal<string>('');
-  selectedAnswerIndex = signal<number>(-1);
-  isFinish = signal<boolean>(false);
+  timerChart?: Chart;
+
+  // ================= Signals =================
+  examId = signal('');
+  questions = signal<Question[]>([]);
+  answers = signal<Answer[]>([]);
+  questionLength = signal(0);
+  questionIndex = signal(0);
+
+  questionText = signal('');
+  examName = signal('');
+  questionDuration = signal(0);
+
+  selectedAnswerIndex = signal(-1);
+  isFinish = signal(false);
 
   userAnswers = signal<Map<number, number>>(new Map());
   remainingTimes = signal<Map<number, number>>(new Map());
-  currentTimer = signal<number>(0);
+
+  currentTimer = signal(0);
   timerInterval: any = null;
 
-  // result answers
-  resultWron = signal([]);
-  totalcorr = signal('');
+  private isAutoMoving = false;
+
+  // ================= Result =================
+  resultWrong = signal<any[]>([]);
   correct = signal(0);
   wrong = signal(0);
-  dataLength = signal(0);
+  total = signal('');
 
+  // ================= Lifecycle =================
   ngOnInit(): void {
-    const routeSub = this._activatedRoute.params.subscribe((par) => {
-      this.examId.set(par['id']);
-      this.getAllQuesions(this.examId());
+    const sub = this.route.params.subscribe(params => {
+      this.examId.set(params['id']);
+      this.getAllQuestions(this.examId());
     });
-    this.subscriptions.add(routeSub);
+    this.subs.add(sub);
   }
 
   ngAfterViewInit(): void {
-    // Create the timer chart when view is ready
     this.createTimerChart();
   }
 
   ngOnDestroy(): void {
     this.clearTimer();
-    this.subscriptions.unsubscribe();
-    // Destroy the chart
-    if (this.timerChart) {
-      this.timerChart.destroy();
-    }
+    this.subs.unsubscribe();
+    this.timerChart?.destroy();
   }
 
+  // ================= Timer =================
   private clearTimer(): void {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
@@ -82,28 +96,31 @@ export class Questions implements OnInit, OnDestroy, AfterViewInit {
 
   private startTimer(): void {
     this.clearTimer();
+    this.isAutoMoving = false;
 
     const idx = this.questionIndex();
     const duration = this.questionDuration();
-
     const savedTime = this.remainingTimes().get(idx);
-    const startTime = savedTime !== undefined ? savedTime : duration;
 
-    this.currentTimer.set(startTime);
+    this.currentTimer.set(savedTime ?? duration);
     this.updateTimerChart();
 
     this.timerInterval = setInterval(() => {
       this.currentTimer.update(time => {
+
         if (time <= 1) {
-          clearInterval(this.timerInterval);
+          if (this.isAutoMoving) return 0;
+
+          this.isAutoMoving = true;
+          this.clearTimer();
           this.autoMoveToNextQuestion();
           return 0;
         }
 
         const newTime = time - 1;
-        const updatedMap = new Map(this.remainingTimes());
-        updatedMap.set(idx, newTime);
-        this.remainingTimes.set(updatedMap);
+        const map = new Map(this.remainingTimes());
+        map.set(idx, newTime);
+        this.remainingTimes.set(map);
 
         return newTime;
       });
@@ -112,47 +129,28 @@ export class Questions implements OnInit, OnDestroy, AfterViewInit {
     }, 1000);
   }
 
+  // ================= Chart =================
   private createTimerChart(): void {
-    const canvas = this.timerChartCanvas?.nativeElement;
-    if (!canvas) return;
+    if (!this.timerChartCanvas) return;
 
-    // Destroy existing chart if it exists
-    if (this.timerChart) {
-      this.timerChart.destroy();
-    }
-
-    const duration = this.questionDuration();
-    const remainingTime = this.currentTimer();
-    const elapsedTime = duration - remainingTime;
+    const canvas = this.timerChartCanvas.nativeElement;
+    this.timerChart?.destroy();
 
     const config: ChartConfiguration<'doughnut'> = {
       type: 'doughnut',
       data: {
         datasets: [{
-          data: [elapsedTime, remainingTime],
-          backgroundColor: [
-            '#E8E8E8', // Gray for elapsed time
-            '#4CAF50'   // Green for remaining time
-          ],
-          borderWidth: 0,
-          hoverOffset: 0
+          data: [0, 1],
+          backgroundColor: ['#E8E8E8', '#4CAF50'],
+          borderWidth: 0
         }]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            enabled: false
-          }
-        },
         cutout: '85%',
-        animation: {
-          animateRotate: true,
-          animateScale: false
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
         }
       }
     };
@@ -161,162 +159,129 @@ export class Questions implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private updateTimerChart(): void {
-    if (!this.timerChart) {
-      this.createTimerChart();
-      return;
-    }
+    if (!this.timerChart) return;
 
     const duration = this.questionDuration();
-    const remainingTime = this.currentTimer();
-    const elapsedTime = Math.max(0, duration - remainingTime);
+    const remaining = this.currentTimer();
+    const elapsed = Math.max(0, duration - remaining);
 
-    // Update chart data
-    this.timerChart.data.datasets[0].data = [elapsedTime, remainingTime];
+    this.timerChart.data.datasets[0].data = [elapsed, remaining];
+    this.timerChart.data.datasets[0].backgroundColor =
+      remaining <= 10
+        ? ['#E8E8E8', '#F44336']
+        : ['#E8E8E8', '#4CAF50'];
 
-    // Change color to red when time is running out (last 10 seconds)
-    if (remainingTime <= 10) {
-      this.timerChart.data.datasets[0].backgroundColor = ['#E8E8E8', '#F44336'];
-    } else {
-      this.timerChart.data.datasets[0].backgroundColor = ['#E8E8E8', '#4CAF50'];
-    }
+    this.timerChart.update('none');
+  }
 
-    this.timerChart.update('none'); // 'none' prevents animation for smoother updates
+  // ================= Questions =================
+  private updateCurrentQuestion(): void {
+    const idx = this.questionIndex();
+    const list = this.questions();
+
+    if (!list[idx]) return;
+
+    const q = list[idx];
+
+    this.questionText.set(q.question);
+    this.answers.set(q.answers);
+    this.examName.set(q.exam.title);
+    this.questionDuration.set(q.exam.duration);
+
+    const savedAnswer = this.userAnswers().get(idx);
+    this.selectedAnswerIndex.set(savedAnswer ?? -1);
+
+    this.startTimer();
   }
 
   private autoMoveToNextQuestion(): void {
-    if (this.questionIndex() < this.quistionLength() - 1) {
-      this.nextQues();
-    }
-  }
+    if (this.questionIndex() < this.questionLength() - 1) {
+      this.questionIndex.update(v => v + 1);
 
-  private updateCurrentQuestion(): void {
-    const idx = this.questionIndex();
-    const questions = this.quistions();
-
-    if (questions.length > 0 && idx >= 0 && idx < questions.length) {
-      const currentQuestion = questions[idx];
-      this.theQuession.set(currentQuestion.question);
-      this.quistionAnswer.set(currentQuestion.answers);
-      this.examName.set(currentQuestion.exam.title);
-      this.questionDuration.set(currentQuestion.exam.duration);
-
-      const savedAnswer = this.userAnswers().get(idx);
-      this.selectedAnswerIndex.set(savedAnswer !== undefined ? savedAnswer : -1);
-
-      this.startTimer();
-    }
-  }
-
-  getAllQuesions(id: string) {
-    const sub = this._questionServ.getAllquestions(id).subscribe({
-      next: (res) => {
-        this.quistions.set(res.questions);
-        this.quistionLength.set(res.questions.length);
-        this.questionIndex.set(0);
-        this.userAnswers.set(new Map());
-        this.remainingTimes.set(new Map());
+      setTimeout(() => {
         this.updateCurrentQuestion();
-      },
-      error: (err) => {
-      }
-    });
-    this.subscriptions.add(sub);
+      });
+
+    } else {
+      this.clearTimer();
+    }
   }
 
-  nextQues() {
-    this.clearTimer();
+  getAllQuestions(id: string): void {
+    const sub = this.questionServ.getAllquestions(id).subscribe(res => {
+      this.questions.set(res.questions);
+      this.questionLength.set(res.questions.length);
+      this.questionIndex.set(0);
+      this.userAnswers.set(new Map());
+      this.remainingTimes.set(new Map());
+      this.updateCurrentQuestion();
+    });
+    this.subs.add(sub);
+  }
 
-    if (this.questionIndex() < this.quistionLength() - 1) {
-      this.questionIndex.update((val) => val + 1);
+  nextQuestion(): void {
+    if (this.questionIndex() < this.questionLength() - 1) {
+      this.clearTimer();
+      this.questionIndex.update(v => v + 1);
       this.updateCurrentQuestion();
     }
   }
 
-  prevQues() {
-    this.clearTimer();
-
+  prevQuestion(): void {
     if (this.questionIndex() > 0) {
-      this.questionIndex.update((val) => val - 1);
+      this.clearTimer();
+      this.questionIndex.update(v => v - 1);
       this.updateCurrentQuestion();
     }
   }
 
-  submitResult(data: Root) {
-    const sub = this._questionServ.submitQuestions(data).subscribe({
-      next: (res) => {
-        this.resultWron.set(res.WrongQuestions);
-        this.totalcorr.set(res.total);
-        this.wrong.set(res.wrong);
-        this.correct.set(res.correct);
-        this.isFinish.set(true);
-        this.clearTimer();
-      }
-    });
-    this.subscriptions.add(sub);
+  // ================= Answers =================
+  selectAnswer(index: number): void {
+    const idx = this.questionIndex();
+    this.selectedAnswerIndex.set(index);
+
+    const map = new Map(this.userAnswers());
+    map.set(idx, index);
+    this.userAnswers.set(map);
   }
 
-  result() {
-    const formattedAnswers = this.quistions().map((question, index) => {
-      const answerIndex = this.userAnswers().get(index);
-
-      if (answerIndex === undefined) {
-        return {
-          questionId: question._id,
-          correct: undefined
-        };
-      }
-
-      const selectedAnswer = question.answers[answerIndex];
-
+  // ================= Submit =================
+  result(): void {
+    const formatted = this.questions().map((q, i) => {
+      const ansIndex = this.userAnswers().get(i);
       return {
-        questionId: question._id,
-        correct: selectedAnswer ? selectedAnswer.key : undefined
+        questionId: q._id,
+        correct: ansIndex !== undefined ? q.answers[ansIndex]?.key : undefined
       };
     });
 
     const data: Root = {
-      answers: formattedAnswers,
+      answers: formatted,
       time: 10
     };
 
-    this.submitResult(data);
+    const sub = this.questionServ.submitQuestions(data).subscribe(res => {
+      this.resultWrong.set(res.WrongQuestions);
+      this.correct.set(res.correct);
+      this.wrong.set(res.wrong);
+      this.total.set(res.total);
+      this.isFinish.set(true);
+      this.clearTimer();
+    });
+
+    this.subs.add(sub);
   }
 
-  selectAnswer(index: number): void {
-    const currentIndex = this.questionIndex();
-    this.selectedAnswerIndex.set(index);
-
-    const updatedMap = new Map(this.userAnswers());
-    updatedMap.set(currentIndex, index);
-    this.userAnswers.set(updatedMap);
-  }
-
-  restartQuiz() {
+  // ================= Restart =================
+  restartQuiz(): void {
     this.isFinish.set(false);
-
-    // reset index
     this.questionIndex.set(0);
-
-    // reset answers
-    this.selectedAnswerIndex.set(-1);
     this.userAnswers.set(new Map());
-
-    // reset results
+    this.remainingTimes.set(new Map());
     this.correct.set(0);
     this.wrong.set(0);
-    this.resultWron.set([]);
-    this.totalcorr.set('');
-
-    // reset timer
-    this.remainingTimes.set(new Map());
+    this.total.set('');
     this.clearTimer();
-
-    // Destroy and recreate timer chart
-    if (this.timerChart) {
-      this.timerChart.destroy();
-      this.timerChart = undefined;
-    }
-
     this.updateCurrentQuestion();
   }
 }

@@ -23,9 +23,9 @@
   <div class="profile-section" (click)="toggleMenu()">
     <div class="profile-trigger d-flex align-items-center py-3">
       <div class="profile-icon me-2">
-        {{ username.charAt(0) }}
+        {{ username().charAt(0) }}
       </div>
-      <span class="fw-semibold">{{ username }}</span>
+      <span class="fw-semibold">{{ username().toUpperCase() }}</span>
     </div>
 
     @if(isMenuOpen){

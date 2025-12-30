@@ -4,76 +4,79 @@
   <div class="d-flex justify-content-between align-items-center mb-2">
     <span class="text-muted">{{ examName() }}</span>
     <span class="text-muted">
-      Question <span class="text-primary fw-bold">{{ questionIndex() + 1 }}</span> of {{ quistionLength() }}
+      Question <span class="text-primary fw-bold">{{ questionIndex() + 1 }}</span>
+      of {{ questionLength() }}
     </span>
   </div>
 
-  <!-- Progress Bar -->
+  <!-- Progress -->
   <div class="progress mb-3 rounded-0" style="height: 14px;">
-    <div class="progress-bar" [style.width.%]="((questionIndex() + 1) / quistionLength()) * 100"></div>
-  </div>
-
-  <!-- Question -->
-   @if(!isFinish()){
-    <h4 class="question-title mb-4">{{ theQuession() }}</h4>
-   }@else{
-    <h4 class="question-title mb-4">Results :</h4>
-   }
-
-
-  @if(!isFinish()){
-    <!-- Options -->
-  <div class="options">
-  @for (item of quistionAnswer(); track $index) {
-    <app-ques-choise
-      [id]="item.key"
-      [Option]="item.answer"
-      [value]="item.key"
-      [checked]="selectedAnswerIndex() === $index"
-      (select)="selectAnswer($index)"
-    ></app-ques-choise>
-  }
-</div>
-
-
-  <!-- Footer -->
-  <div class="d-flex align-items-center gap-3 mt-5">
-    <button class="btn btn-light w-50" (click)="prevQues()" [disabled]="questionIndex() === 0">
-      ‹ Previous
-    </button>
-
-    <div class="timer-circle">
-      <svg class="progress-ring" width="70" height="70">
-        <circle class="progress-ring__background" cx="35" cy="35" r="30" />
-        <circle
-          class="progress-ring__circle"
-          cx="35"
-          cy="35"
-          r="30"
-        />
-      </svg>
-      <span class="timer-text">{{ currentTimer() }}s</span>
+    <div
+      class="progress-bar"
+      [style.width.%]="((questionIndex() + 1) / questionLength()) * 100">
     </div>
-    @if (questionIndex() === quistionLength() - 1) {
-      <button class="btn btn-primary w-50" (click)="result()" >
-         Finish
-      </button>
-    }@else {
-      <button class="btn btn-primary w-50" (click)="nextQues()" [disabled]="questionIndex() === quistionLength() - 1">
-          Next ›
-      </button>
-    }
-
   </div>
-}
-@else {
 
-<app-finishing
-  [totalcorr]="totalcorr()"
-  [resultWron]="resultWron()"
-  [wrong]="wrong()"
-  [correct]="correct()"
-  (restart)="restartQuiz()"
-></app-finishing>
-}
+  @if (!isFinish()) {
+
+    <!-- Question -->
+    <h4 class="question-title mb-4">
+      {{ questionText() }}
+    </h4>
+
+    <!-- Answers -->
+    <div class="options">
+      @for (item of answers(); track $index) {
+        <app-ques-choise
+          [id]="item.key"
+          [Option]="item.answer"
+          [value]="item.key"
+          [checked]="selectedAnswerIndex() === $index"
+          (select)="selectAnswer($index)">
+        </app-ques-choise>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="d-flex align-items-center gap-3 mt-5">
+
+      <button
+        class="btn btn-light w-50"
+        (click)="prevQuestion()"
+        [disabled]="questionIndex() === 0">
+        ‹ Previous
+      </button>
+
+      <!-- Timer -->
+      <div class="timer-circle position-relative">
+        <canvas #timerChartCanvas width="70" height="70"></canvas>
+        <span class="timer-text position-absolute top-50 start-50 translate-middle">
+          {{ currentTimer() }}s
+        </span>
+      </div>
+
+      @if (questionIndex() === questionLength() - 1) {
+        <button class="btn btn-primary w-50" (click)="result()">
+          Finish
+        </button>
+      } @else {
+        <button class="btn btn-primary w-50" (click)="nextQuestion()">
+          Next ›
+        </button>
+      }
+
+    </div>
+
+  } @else {
+
+    <app-finishing
+      [totalcorr]="total()"
+      [resultWron]="resultWrong()"
+      [wrong]="wrong()"
+      [correct]="correct()"
+      (restart)="restartQuiz()">
+    </app-finishing>
+
+  }
+
 </div>

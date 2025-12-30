@@ -1,42 +1,55 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterLinkWithHref } from '@angular/router';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from 'auth';
-import { subscribe } from 'diagnostics_channel';
 import { Subject, takeUntil } from 'rxjs';
+import { UserInfo } from '../../services/user-info';
 
 @Component({
   selector: 'app-sidebar',
+  standalone: true,
   imports: [RouterLinkActive, CommonModule, RouterLink],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.scss',
+  styleUrls: ['./sidebar.scss'],  // لاحظ: styleUrls وليس styleUrl
 })
-export class Sidebar {
-username = "Ahmed Mohamed";
-isMenuOpen = false;
-private router = inject(Router);
- private destroy$ = new Subject<void>();
-private _Auth = inject(AuthService);
-tokens: string = localStorage.getItem("authToken") || '';
+export class Sidebar implements OnDestroy {
+  username = signal('');
+  isMenuOpen = false;
 
-toggleMenu() {
-  this.isMenuOpen = !this.isMenuOpen;
-}
+  private router = inject(Router);
+  private destroy$ = new Subject<void>();
+  private _Auth = inject(AuthService);
+  private _UserInfo = inject(UserInfo);
 
-logout() {
-  this._Auth.logout().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-    next : (res) =>{
-        localStorage.removeItem("authToken");
-         this.router.navigate(['/login']);
-    }
-  })
-}
+  tokens: string = localStorage.getItem('authToken') || '';
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  logout() {
+    this._Auth.logout()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          localStorage.removeItem('authToken');
+          this.router.navigate(['/login']);
+        }
+      });
+  }
+
+  ngDoCheck() {
+    this._UserInfo.getLoggedUserInfo()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.username.set(`${res.user.firstName} ${res.user.lastName}`);
+        }
+      });
+  }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 }
