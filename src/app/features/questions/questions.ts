@@ -26,7 +26,7 @@ Chart.register(...registerables);
   standalone: true,
   imports: [CommonModule, QuesChoise, Finishing],
   templateUrl: './questions.html',
-  styleUrl: './questions.scss',
+  styleUrls: ['./questions.scss'],
 })
 export class Questions implements OnInit, OnDestroy, AfterViewInit {
 
@@ -34,7 +34,7 @@ export class Questions implements OnInit, OnDestroy, AfterViewInit {
   private questionServ = inject(QuestionServ);
   private subs = new Subscription();
 
-  @ViewChild('timerChartCanvas')
+  @ViewChild('timerChartCanvas', { static: false })
   timerChartCanvas!: ElementRef<HTMLCanvasElement>;
 
   timerChart?: Chart;
@@ -131,7 +131,10 @@ export class Questions implements OnInit, OnDestroy, AfterViewInit {
 
   // ================= Chart =================
   private createTimerChart(): void {
-    if (!this.timerChartCanvas) return;
+    if (!this.timerChartCanvas) {
+      console.warn('timerChartCanvas not ready yet!');
+      return;
+    }
 
     const canvas = this.timerChartCanvas.nativeElement;
     this.timerChart?.destroy();
@@ -282,6 +285,10 @@ export class Questions implements OnInit, OnDestroy, AfterViewInit {
     this.wrong.set(0);
     this.total.set('');
     this.clearTimer();
-    this.updateCurrentQuestion();
+
+    setTimeout(() => {
+      this.createTimerChart();
+      this.updateCurrentQuestion();
+    }, 0);
   }
 }
